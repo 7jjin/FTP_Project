@@ -136,5 +136,10 @@ namespace FTP_Project
                 }
             }
         }
+
+        internal bool ConnectToServer(string text1, string text2, string text3)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
