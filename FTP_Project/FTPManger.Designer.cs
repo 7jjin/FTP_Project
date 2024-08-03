@@ -39,15 +39,19 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.myDirectory = new System.Windows.Forms.TreeView();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.listView1 = new System.Windows.Forms.ListView();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -136,6 +140,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.18727F));
             this.tableLayoutPanel1.Controls.Add(this.panel2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel3, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.listView1, 0, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 102);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
@@ -159,10 +164,20 @@
             // 
             this.panel4.AutoScroll = true;
             this.panel4.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panel4.Controls.Add(this.myDirectory);
             this.panel4.Location = new System.Drawing.Point(2, 52);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(390, 177);
             this.panel4.TabIndex = 9;
+            this.panel4.Paint += new System.Windows.Forms.PaintEventHandler(this.panel4_Paint);
+            // 
+            // myDirectory
+            // 
+            this.myDirectory.Location = new System.Drawing.Point(3, 3);
+            this.myDirectory.Name = "myDirectory";
+            this.myDirectory.Size = new System.Drawing.Size(387, 174);
+            this.myDirectory.TabIndex = 0;
+            this.myDirectory.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // comboBox1
             // 
@@ -220,6 +235,15 @@
             this.label3.Text = "Remote site";
             this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
+            // listView1
+            // 
+            this.listView1.HideSelection = false;
+            this.listView1.Location = new System.Drawing.Point(3, 237);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(392, 193);
+            this.listView1.TabIndex = 2;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            // 
             // FTPManger
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -235,6 +259,7 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.panel4.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.ResumeLayout(false);
@@ -260,6 +285,9 @@
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Panel panel5;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.TreeView myDirectory;
+        private System.Windows.Forms.ListView listView1;
     }
 }
 
