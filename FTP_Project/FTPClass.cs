@@ -33,7 +33,7 @@ namespace FTP_Project
 
         // 서버 연결
 
-        private bool connectToServer(string ip, string userId, string pwd)
+        public bool ConnectToServer(string ip, string userId, string pwd)
         {
             this.isConnected = false;
             this.ipAddr = ip;
@@ -135,11 +135,6 @@ namespace FTP_Project
                     return directoryPaths;
                 }
             }
-        }
-
-        internal bool ConnectToServer(string text1, string text2, string text3)
-        {
-            throw new NotImplementedException();
         }
     }
 }

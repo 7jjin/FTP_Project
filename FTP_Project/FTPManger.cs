@@ -32,38 +32,6 @@ namespace FTP_Project
             }
         }
 
-        private void ConnectionBtn_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(FTPIpAddrTxt.Text))
-            {
-                MessageBox.Show("IP를 입력해주세요.");
-                FTPIpAddrTxt.Focus();
-                return;
-            }
-            if (string.IsNullOrEmpty(FTPUserIdTxt.Text))
-            {
-                MessageBox.Show("아이디를 입력해주세요.");
-                FTPUserIdTxt.Focus();
-                return;
-            }
-            if (string.IsNullOrEmpty(FTPUserPwTxt.Text))
-            {
-                MessageBox.Show("비밀번호를 입력해주세요.");
-                FTPUserPwTxt.Focus();
-                return;
-            }
-
-            result = ftp.ConnectToServer(FTPIpAddrTxt.Text, FTPUserIdTxt.Text, FTPUserPwTxt.Text);
-            if (!result)
-            {
-                MessageBox.Show("FTP 접속 실패하였습니다, 정보를 확인해주세요.");
-                return;
-            }
-
-            MessageBox.Show("FTP 접속 성공");
-         
-        }
-
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
 
@@ -117,6 +85,42 @@ namespace FTP_Project
         private void label2_Click_2(object sender, EventArgs e)
         {
 
+        }
+
+        private void FTPIpAddrTxt_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ConnectionBtn_Click_1(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(FTPIpAddrTxt.Text))
+            {
+                MessageBox.Show("IP를 입력해주세요.");
+                FTPIpAddrTxt.Focus();
+                return;
+            }
+            if (string.IsNullOrEmpty(FTPUserIdTxt.Text))
+            {
+                MessageBox.Show("아이디를 입력해주세요.");
+                FTPUserIdTxt.Focus();
+                return;
+            }
+            if (string.IsNullOrEmpty(FTPUserPwTxt.Text))
+            {
+                MessageBox.Show("비밀번호를 입력해주세요.");
+                FTPUserPwTxt.Focus();
+                return;
+            }
+
+            result = ftp.ConnectToServer(FTPIpAddrTxt.Text, FTPUserIdTxt.Text, FTPUserPwTxt.Text);
+            if (!result)
+            {
+                MessageBox.Show("FTP 접속 실패하였습니다, 정보를 확인해주세요.");
+                return;
+            }
+
+            MessageBox.Show("FTP 접속 성공");
         }
     }
 }
