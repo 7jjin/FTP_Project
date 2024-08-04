@@ -44,7 +44,7 @@ namespace FTP_Project
 
             try
             {
-  
+
                 FtpWebRequest ftpWebRequest = (FtpWebRequest)WebRequest.Create(url);
 
                 ftpWebRequest.Credentials = new NetworkCredential(this.userId, this.pwd);
@@ -53,6 +53,7 @@ namespace FTP_Project
 
                 ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectory;
                 ftpWebRequest.UsePassive = false;
+                Console.WriteLine("FTP",ftpWebRequest.ToString());
 
                 // FTP 서버 응답을 반환
                 using (ftpWebRequest.GetResponse())
@@ -80,61 +81,41 @@ namespace FTP_Project
             return true;
         }
 
-        
-
-        public async Task<List<DirectoryPath>> GetFTPList(string path)
+        // 디렉토리 목록을 가져오는 메서드
+        public List<string> GetDirectoryListing(string path)
         {
-            directoryPaths = new List<DirectoryPath>(); ;
-            return await Task.FromResult(getFTPList(path));
-        }
+            List<string> directories = new List<string>();
 
-        // 전체파일 불러오기
-        private List<DirectoryPath> getFTPList(string path)
-        {
-            string url = $@"FTP://{this.ipAddr}:21/{path}";
-            DirectoryPath directoryPath = null;
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
-            request.Credentials = new NetworkCredential(userId, pwd);
-            request.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
-
-            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+            try
             {
-                using (StreamReader reader = new StreamReader(response.GetResponseStream(), System.Text.Encoding.UTF8))
+                string url = $@"FTP://{this.ipAddr}/{path}";
+                FtpWebRequest ftpWebRequest = (FtpWebRequest)WebRequest.Create(url);
+                ftpWebRequest.Credentials = new NetworkCredential(this.userId, this.pwd);
+                ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
+
+                using (FtpWebResponse response = (FtpWebResponse)ftpWebRequest.GetResponse())
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
-                    string strData = reader.ReadToEnd();
-                    if (string.IsNullOrEmpty(strData))
+                    while (!reader.EndOfStream)
                     {
-                        directoryPath = new DirectoryPath();
-                        directoryPath.Folder = path;
-                        directoryPath.File = "EMPTY";
-                        directoryPaths.Add(directoryPath);
+                        directories.Add(reader.ReadLine());
                     }
-
-                    string[] filename = strData.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (string file in filename)
-                    {
-                        string[] fileDetailes = file.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-
-                        directoryPath = new DirectoryPath();
-
-                        if (fileDetailes[0].Contains("d"))
-                        {
-                            getFTPList($"{path}{fileDetailes[8]}/");
-                        }
-                        else
-                        {
-                            directoryPath.Folder = path;
-                            directoryPath.File = fileDetailes[8];
-                            directoryPaths.Add(directoryPath);
-                        }
-                        //Console.WriteLine($"권한 : {fileDetailes[0]}");
-                        //Console.WriteLine($"파일or폴더 : {fileDetailes[8]}");
-                    }
-
-                    return directoryPaths;
                 }
             }
+            catch (Exception ex)
+            {
+                this.LastException = ex;
+
+                System.Reflection.MemberInfo info = System.Reflection.MethodInfo.GetCurrentMethod();
+                string id = $"{info.ReflectedType.Name}.{info.Name}";
+
+                if (this.ExceptionEvent != null)
+                {
+                    this.ExceptionEvent(id, ex);
+                }
+            }
+
+            return directories;
         }
     }
 }

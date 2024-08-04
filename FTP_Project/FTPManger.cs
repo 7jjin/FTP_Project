@@ -36,6 +36,16 @@ namespace FTP_Project
             // 트리뷰 이벤트 핸들러 연결
             myDirectory.BeforeExpand += treeView1_BeforeExpand;
             myDirectory.NodeMouseClick += treeView1_NodeMouseClick;
+            ftpDirectory.BeforeExpand += treeView2_BeforeExpand;
+            ftpDirectory.NodeMouseClick += treeView2_NodeMouseClick;
+            listView1.ItemDrag += new ItemDragEventHandler(listView_ItemDrag);
+            listView2.ItemDrag += new ItemDragEventHandler(listView_ItemDrag);
+            listView1.DragEnter += new DragEventHandler(listView_DragEnter);
+            listView2.DragEnter += new DragEventHandler(listView_DragEnter);
+            listView1.DragDrop += new DragEventHandler(listView_DragDrop);
+            listView2.DragDrop += new DragEventHandler(listView_DragDrop);
+            listView1.DragOver += new DragEventHandler(listView_DragOver);
+            listView2.DragOver += new DragEventHandler(listView_DragOver);
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
@@ -51,6 +61,69 @@ namespace FTP_Project
         private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        // ItemDrag 이벤트 핸들러
+        private void listView_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            System.Windows.Forms.ListView listView = sender as System.Windows.Forms.ListView;
+            if (listView != null)
+            {
+                listView.DoDragDrop(listView.SelectedItems, DragDropEffects.Move);
+            }
+        }
+
+        // DragEnter 이벤트 핸들러
+        private void listView_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(System.Windows.Forms.ListView.SelectedListViewItemCollection)))
+            {
+                e.Effect = DragDropEffects.Move;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        // DragOver 이벤트 핸들러
+        private void listView_DragOver(object sender, DragEventArgs e)
+        {
+            System.Windows.Forms.ListView listView = sender as System.Windows.Forms.ListView;
+            Point point = listView.PointToClient(new Point(e.X, e.Y));
+            ListViewItem item = listView.GetItemAt(point.X, point.Y);
+
+            if (item != null)
+            {
+                listView.InsertionMark.Index = item.Index;
+                listView.InsertionMark.AppearsAfterItem = point.Y > item.Bounds.Top + (item.Bounds.Height / 2);
+            }
+            else
+            {
+                listView.InsertionMark.Index = listView.Items.Count - 1;
+            }
+        }
+
+        // DragDrop 이벤트 핸들러
+        private void listView_DragDrop(object sender, DragEventArgs e)
+        {
+            System.Windows.Forms.ListView listView = sender as System.Windows.Forms.ListView;
+
+            if (e.Data.GetDataPresent(typeof(System.Windows.Forms.ListView.SelectedListViewItemCollection)))
+            {
+                System.Windows.Forms.ListView.SelectedListViewItemCollection items = (System.Windows.Forms.ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(System.Windows.Forms.ListView.SelectedListViewItemCollection));
+                Point point = listView.PointToClient(new Point(e.X, e.Y));
+                ListViewItem targetItem = listView.GetItemAt(point.X, point.Y);
+                int targetIndex = targetItem != null ? targetItem.Index : listView.Items.Count;
+
+                foreach (ListViewItem item in items)
+                {
+                    ListViewItem clonedItem = (ListViewItem)item.Clone();
+                    listView.Items.Insert(targetIndex, clonedItem);
+                    item.Remove();
+                    targetIndex++;
+                }
+            }
         }
 
         // TreeView 폴더 기준으로 노드 경로를 가져옴
@@ -73,6 +146,7 @@ namespace FTP_Project
 
             //ListView 보기 속성 설정
             listView1.View = View.Details;
+            listView2.View = View.Details;
 
             //ListView Details 속성을 위한 헤더 추가
             listView1.Columns.Add("이름", listView1.Width / 4, HorizontalAlignment.Left);
@@ -80,9 +154,16 @@ namespace FTP_Project
             listView1.Columns.Add("유형", listView1.Width / 4, HorizontalAlignment.Left);
             listView1.Columns.Add("크기", listView1.Width / 4, HorizontalAlignment.Left);
 
+            listView2.Columns.Add("이름", listView2.Width / 4, HorizontalAlignment.Left);
+            listView2.Columns.Add("수정한 날짜", listView2.Width / 4, HorizontalAlignment.Left);
+            listView2.Columns.Add("유형", listView2.Width / 4, HorizontalAlignment.Left);
+            listView2.Columns.Add("크기", listView2.Width / 4, HorizontalAlignment.Left);
+
             //행 단위 선택 가능
             listView1.FullRowSelect = true;
+            listView2.FullRowSelect = true;
         }
+        // 디렉토리 정보를 Treeview에 뿌려주기
         private void Fill(TreeNode dirNode)
         {
             try
@@ -127,6 +208,27 @@ namespace FTP_Project
                 Fill(e.Node);
             }
         }
+        private void treeView2_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            if (e.Node.Nodes[0].Text == "*")
+            {
+                e.Node.Nodes.Clear();
+                Fill(e.Node);
+            }
+        }
+        /// <summary>
+        /// 트리가 닫히기 전에 발생하는 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void treeView2_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
+        {
+            if (e.Node.Nodes[0].Text == "*")
+            {
+                e.Node.Nodes.Clear();
+                Fill(e.Node);
+            }
+        }
         /// <summary>
         /// 트리를 마우스로 클릭할 때 발생하는 이벤트
         /// </summary>
@@ -134,18 +236,21 @@ namespace FTP_Project
         /// <param name="e"></param>
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            SettingListVeiw(e.Node.FullPath);
+            SettingMyListVeiw(e.Node.FullPath);
         }
         /// <summary>
-        /// 오른쪽 ListView를 그린다.
+        /// Client 아래 ListView를 그린다.
         /// </summary>
         /// <param name="sFullPath"></param>
-        private void SettingListVeiw(string sFullPath)
+        private void SettingMyListVeiw(string sFullPath)
         {
             try
             {
                 //기존의 파일 목록 제거
                 listView1.Items.Clear();
+                //현재 경로를 표시
+
+                localTextBox.Text = sFullPath;
                 DirectoryInfo dir = new DirectoryInfo(sFullPath);
                 int DirectCount = 0;
                 //하부 데렉토르 보여주기
@@ -231,6 +336,7 @@ namespace FTP_Project
 
         }
 
+        // FTP 연결 버튼 이벤트
         private void ConnectionBtn_Click_1(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(FTPIpAddrTxt.Text))
@@ -260,6 +366,101 @@ namespace FTP_Project
             }
 
             MessageBox.Show("FTP 접속 성공");
+            LoadDirectoryTree("/");
+        }
+
+
+        // remote Treeview 구성 메소드
+        private void LoadDirectoryTree(string path)
+        {
+            ftpDirectory.Nodes.Clear();
+            TreeNode rootNode = new TreeNode(path);
+            ftpDirectory.Nodes.Add(rootNode);
+
+            AddDirectoryNodes(rootNode, path);
+            rootNode.Expand();
+        }
+
+        // remote 폴더, 파일 가져오는 메소드
+        private void AddDirectoryNodes(TreeNode treeNode, string path)
+        {
+            List<string> directories = ftp.GetDirectoryListing(path);
+
+            foreach (string dir in directories)
+            {
+                string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+                string name = parts[8];
+
+                if (dir.StartsWith("d"))
+                {
+                    // 디렉토리인 경우
+                    TreeNode dirNode = new TreeNode(name);
+                    treeNode.Nodes.Add(dirNode);
+                    AddDirectoryNodes(dirNode, path + "/" + name);
+                }
+                else
+                {
+                    // 파일인 경우
+                    TreeNode fileNode = new TreeNode(name);
+                    treeNode.Nodes.Add(fileNode);
+                }
+            }
+        }
+
+        private void treeView2_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            SettingRemoteListView(e.Node.FullPath);
+        }
+
+        private void SettingRemoteListView(string sFullPath)
+        {
+            try
+            {
+                listView2.Items.Clear();
+
+                RemoteTextBox.Text = sFullPath;
+
+                List<string> directories = ftp.GetDirectoryListing(sFullPath);
+                List<string> files = ftp.GetDirectoryListing(sFullPath);
+
+                int DirectCount = 0;
+                foreach (string dir in directories)
+                {
+                    string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+                    string name = parts[8];
+                    string date = parts[5] + " " + parts[6] + " " + parts[7];
+
+                    ListViewItem lsvitem = new ListViewItem();
+                    lsvitem.Text = name;
+                    listView2.Items.Add(lsvitem);
+                    listView2.Items[DirectCount].SubItems.Add(date);
+                    listView2.Items[DirectCount].SubItems.Add("폴더");
+                    listView2.Items[DirectCount].SubItems.Add("");
+                    DirectCount++;
+                }
+
+                int Count = 0;
+                foreach (string file in files)
+                {
+                    string[] parts = file.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+                    string name = parts[8];
+                    string date = parts[5] + " " + parts[6] + " " + parts[7];
+                    string size = parts[4];
+
+                    ListViewItem lsvitem = new ListViewItem();
+                    lsvitem.Text = name;
+                    listView2.Items.Add(lsvitem);
+                    listView2.Items[Count].SubItems.Add(date);
+                    listView2.Items[Count].SubItems.Add("파일");
+                    listView2.Items[Count].SubItems.Add(size);
+                    Count++;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("에러 발생 : " + ex.Message);
+            }
+            ftpDirectory.Nodes[0].Expand();
         }
 
         private void panel4_Paint(object sender, PaintEventArgs e)
@@ -276,5 +477,51 @@ namespace FTP_Project
         {
 
         }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void localTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ftpDirectory_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+
+        private void listView1_DragDrop(object sender, DragEventArgs e)
+        {
+
+        }
+        private void listView1_DragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+
+        
+
+        private void listView2_DragDrop(object sender, DragEventArgs e)
+        {
+
+        }
+        private void listView2_DragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void listView1_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }
