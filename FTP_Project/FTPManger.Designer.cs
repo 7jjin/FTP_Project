@@ -37,7 +37,6 @@
             this.IP = new System.Windows.Forms.Label();
             this.UserName = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.listView2 = new System.Windows.Forms.ListView();
             this.panel2 = new System.Windows.Forms.Panel();
             this.localTextBox = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -48,9 +47,12 @@
             this.panel5 = new System.Windows.Forms.Panel();
             this.ftpDirectory = new System.Windows.Forms.TreeView();
             this.label3 = new System.Windows.Forms.Label();
+            this.listView2 = new System.Windows.Forms.ListView();
             this.listView1 = new System.Windows.Forms.ListView();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.Disconnect = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -61,6 +63,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.Disconnect);
             this.panel1.Controls.Add(this.ConnectionBtn);
             this.panel1.Controls.Add(this.FTPUserPwTxt);
             this.panel1.Controls.Add(this.label1);
@@ -71,16 +74,16 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(701, 66);
+            this.panel1.Size = new System.Drawing.Size(801, 82);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
             // ConnectionBtn
             // 
-            this.ConnectionBtn.Location = new System.Drawing.Point(552, 27);
+            this.ConnectionBtn.Location = new System.Drawing.Point(681, 11);
             this.ConnectionBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ConnectionBtn.Name = "ConnectionBtn";
-            this.ConnectionBtn.Size = new System.Drawing.Size(74, 22);
+            this.ConnectionBtn.Size = new System.Drawing.Size(95, 28);
             this.ConnectionBtn.TabIndex = 6;
             this.ConnectionBtn.Text = "Connect";
             this.ConnectionBtn.UseVisualStyleBackColor = true;
@@ -88,46 +91,46 @@
             // 
             // FTPUserPwTxt
             // 
-            this.FTPUserPwTxt.Location = new System.Drawing.Point(403, 28);
+            this.FTPUserPwTxt.Location = new System.Drawing.Point(461, 35);
             this.FTPUserPwTxt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.FTPUserPwTxt.Name = "FTPUserPwTxt";
-            this.FTPUserPwTxt.Size = new System.Drawing.Size(88, 21);
+            this.FTPUserPwTxt.Size = new System.Drawing.Size(100, 25);
             this.FTPUserPwTxt.TabIndex = 5;
             this.FTPUserPwTxt.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(335, 33);
+            this.label1.Location = new System.Drawing.Point(383, 41);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(62, 12);
+            this.label1.Size = new System.Drawing.Size(72, 15);
             this.label1.TabIndex = 4;
             this.label1.Text = "Password";
             this.label1.Click += new System.EventHandler(this.label1_Click_1);
             // 
             // FTPUserIdTxt
             // 
-            this.FTPUserIdTxt.Location = new System.Drawing.Point(222, 28);
+            this.FTPUserIdTxt.Location = new System.Drawing.Point(254, 35);
             this.FTPUserIdTxt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.FTPUserIdTxt.Name = "FTPUserIdTxt";
-            this.FTPUserIdTxt.Size = new System.Drawing.Size(88, 21);
+            this.FTPUserIdTxt.Size = new System.Drawing.Size(100, 25);
             this.FTPUserIdTxt.TabIndex = 3;
             // 
             // FTPIpAddrTxt
             // 
-            this.FTPIpAddrTxt.Location = new System.Drawing.Point(45, 28);
+            this.FTPIpAddrTxt.Location = new System.Drawing.Point(51, 35);
             this.FTPIpAddrTxt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.FTPIpAddrTxt.Name = "FTPIpAddrTxt";
-            this.FTPIpAddrTxt.Size = new System.Drawing.Size(88, 21);
+            this.FTPIpAddrTxt.Size = new System.Drawing.Size(100, 25);
             this.FTPIpAddrTxt.TabIndex = 2;
             this.FTPIpAddrTxt.TextChanged += new System.EventHandler(this.FTPIpAddrTxt_TextChanged);
             // 
             // IP
             // 
             this.IP.AutoSize = true;
-            this.IP.Location = new System.Drawing.Point(18, 33);
+            this.IP.Location = new System.Drawing.Point(21, 41);
             this.IP.Name = "IP";
-            this.IP.Size = new System.Drawing.Size(16, 12);
+            this.IP.Size = new System.Drawing.Size(20, 15);
             this.IP.TabIndex = 1;
             this.IP.Text = "IP";
             this.IP.Click += new System.EventHandler(this.label1_Click);
@@ -135,9 +138,9 @@
             // UserName
             // 
             this.UserName.AutoSize = true;
-            this.UserName.Location = new System.Drawing.Point(154, 33);
+            this.UserName.Location = new System.Drawing.Point(176, 41);
             this.UserName.Name = "UserName";
-            this.UserName.Size = new System.Drawing.Size(63, 12);
+            this.UserName.Size = new System.Drawing.Size(72, 15);
             this.UserName.TabIndex = 0;
             this.UserName.Text = "Username";
             this.UserName.Click += new System.EventHandler(this.label2_Click);
@@ -151,28 +154,15 @@
             this.tableLayoutPanel1.Controls.Add(this.panel3, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.listView2, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.listView1, 0, 1);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 82);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 102);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 54.67836F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45.32164F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(701, 342);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(801, 428);
             this.tableLayoutPanel1.TabIndex = 1;
             this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint_1);
-            // 
-            // listView2
-            // 
-            this.listView2.AllowDrop = true;
-            this.listView2.HideSelection = false;
-            this.listView2.Location = new System.Drawing.Point(351, 189);
-            this.listView2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(346, 151);
-            this.listView2.TabIndex = 3;
-            this.listView2.UseCompatibleStateImageBehavior = false;
-            this.listView2.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView2_DragDrop);
-            this.listView2.DragEnter += new System.Windows.Forms.DragEventHandler(this.listView2_DragEnter);
             // 
             // panel2
             // 
@@ -182,14 +172,15 @@
             this.panel2.Location = new System.Drawing.Point(3, 2);
             this.panel2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(342, 182);
+            this.panel2.Size = new System.Drawing.Size(391, 228);
             this.panel2.TabIndex = 0;
             // 
             // localTextBox
             // 
-            this.localTextBox.Location = new System.Drawing.Point(81, 13);
+            this.localTextBox.Location = new System.Drawing.Point(93, 16);
+            this.localTextBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.localTextBox.Name = "localTextBox";
-            this.localTextBox.Size = new System.Drawing.Size(243, 21);
+            this.localTextBox.Size = new System.Drawing.Size(277, 25);
             this.localTextBox.TabIndex = 10;
             this.localTextBox.TextChanged += new System.EventHandler(this.localTextBox_TextChanged);
             // 
@@ -198,10 +189,10 @@
             this.panel4.AutoScroll = true;
             this.panel4.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panel4.Controls.Add(this.myDirectory);
-            this.panel4.Location = new System.Drawing.Point(2, 42);
+            this.panel4.Location = new System.Drawing.Point(2, 52);
             this.panel4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(341, 142);
+            this.panel4.Size = new System.Drawing.Size(390, 178);
             this.panel4.TabIndex = 9;
             this.panel4.Paint += new System.Windows.Forms.PaintEventHandler(this.panel4_Paint);
             // 
@@ -210,16 +201,16 @@
             this.myDirectory.Location = new System.Drawing.Point(3, 2);
             this.myDirectory.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.myDirectory.Name = "myDirectory";
-            this.myDirectory.Size = new System.Drawing.Size(339, 127);
+            this.myDirectory.Size = new System.Drawing.Size(387, 158);
             this.myDirectory.TabIndex = 0;
             this.myDirectory.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 16);
+            this.label2.Location = new System.Drawing.Point(17, 20);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(60, 12);
+            this.label2.Size = new System.Drawing.Size(71, 15);
             this.label2.TabIndex = 7;
             this.label2.Text = "Local site";
             this.label2.Click += new System.EventHandler(this.label2_Click_2);
@@ -229,17 +220,18 @@
             this.panel3.Controls.Add(this.RemoteTextBox);
             this.panel3.Controls.Add(this.panel5);
             this.panel3.Controls.Add(this.label3);
-            this.panel3.Location = new System.Drawing.Point(351, 2);
+            this.panel3.Location = new System.Drawing.Point(400, 2);
             this.panel3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(346, 182);
+            this.panel3.Size = new System.Drawing.Size(395, 228);
             this.panel3.TabIndex = 1;
             // 
             // RemoteTextBox
             // 
-            this.RemoteTextBox.Location = new System.Drawing.Point(88, 13);
+            this.RemoteTextBox.Location = new System.Drawing.Point(101, 16);
+            this.RemoteTextBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.RemoteTextBox.Name = "RemoteTextBox";
-            this.RemoteTextBox.Size = new System.Drawing.Size(243, 21);
+            this.RemoteTextBox.Size = new System.Drawing.Size(277, 25);
             this.RemoteTextBox.TabIndex = 11;
             this.RemoteTextBox.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
@@ -248,10 +240,10 @@
             this.panel5.AutoScroll = true;
             this.panel5.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panel5.Controls.Add(this.ftpDirectory);
-            this.panel5.Location = new System.Drawing.Point(0, 42);
+            this.panel5.Location = new System.Drawing.Point(0, 52);
             this.panel5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(346, 141);
+            this.panel5.Size = new System.Drawing.Size(395, 176);
             this.panel5.TabIndex = 10;
             // 
             // ftpDirectory
@@ -259,28 +251,41 @@
             this.ftpDirectory.Location = new System.Drawing.Point(-1, 0);
             this.ftpDirectory.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ftpDirectory.Name = "ftpDirectory";
-            this.ftpDirectory.Size = new System.Drawing.Size(347, 140);
+            this.ftpDirectory.Size = new System.Drawing.Size(396, 174);
             this.ftpDirectory.TabIndex = 1;
             this.ftpDirectory.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ftpDirectory_AfterSelect);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 16);
+            this.label3.Location = new System.Drawing.Point(11, 20);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(72, 12);
+            this.label3.Size = new System.Drawing.Size(85, 15);
             this.label3.TabIndex = 9;
             this.label3.Text = "Remote site";
             this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
+            // listView2
+            // 
+            this.listView2.AllowDrop = true;
+            this.listView2.HideSelection = false;
+            this.listView2.Location = new System.Drawing.Point(400, 236);
+            this.listView2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.listView2.Name = "listView2";
+            this.listView2.Size = new System.Drawing.Size(395, 188);
+            this.listView2.TabIndex = 3;
+            this.listView2.UseCompatibleStateImageBehavior = false;
+            this.listView2.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView2_DragDrop);
+            this.listView2.DragEnter += new System.Windows.Forms.DragEventHandler(this.listView2_DragEnter);
             // 
             // listView1
             // 
             this.listView1.AllowDrop = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(3, 189);
+            this.listView1.Location = new System.Drawing.Point(3, 236);
             this.listView1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(342, 151);
+            this.listView1.Size = new System.Drawing.Size(390, 188);
             this.listView1.TabIndex = 2;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged_1);
@@ -289,19 +294,40 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(605, 427);
+            this.button1.Location = new System.Drawing.Point(691, 534);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(92, 38);
+            this.button1.Size = new System.Drawing.Size(105, 48);
             this.button1.TabIndex = 2;
             this.button1.Text = "동기화";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(122, 568);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(422, 25);
+            this.textBox1.TabIndex = 3;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
+            // Disconnect
+            // 
+            this.Disconnect.Location = new System.Drawing.Point(681, 41);
+            this.Disconnect.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Disconnect.Name = "Disconnect";
+            this.Disconnect.Size = new System.Drawing.Size(95, 28);
+            this.Disconnect.TabIndex = 7;
+            this.Disconnect.Text = "Disconnect";
+            this.Disconnect.UseVisualStyleBackColor = true;
+            this.Disconnect.Click += new System.EventHandler(this.Disconnect_Click);
+            // 
             // FTPManger
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(702, 530);
+            this.ClientSize = new System.Drawing.Size(802, 662);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panel1);
@@ -319,6 +345,7 @@
             this.panel3.PerformLayout();
             this.panel5.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -347,6 +374,8 @@
         private System.Windows.Forms.ListView listView2;
         private System.Windows.Forms.TreeView ftpDirectory;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button Disconnect;
     }
 }
 

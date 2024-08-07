@@ -2,11 +2,17 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Net.WebRequestMethods;
@@ -17,13 +23,19 @@ namespace FTP_Project
     public partial class FTPManger : Form
     {
         // FTP 연결 확인 값
+        //private bool result = false;
+        //private FTPClass ftp = null;
+
         private bool result = false;
-        private FTPClass ftp = null;
-        
+        private static TcpClient client = new TcpClient();
+
         public FTPManger()
+            
         {
+
             InitializeComponent();
-            ftp = new FTPClass();
+            //ftp = new FTPClass();
+            
             FTPIpAddrTxt.Focus();
 
             // 각각의 TextBox를 Default값으로 넣는다.
@@ -47,6 +59,9 @@ namespace FTP_Project
             listView1.DragOver += new DragEventHandler(listView_DragOver);
             listView2.DragOver += new DragEventHandler(listView_DragOver);
         }
+
+        StreamReader streamReader;  // 데이타 읽기 위한 스트림리더
+        StreamWriter streamWriter;  // 데이타 쓰기 위한 스트림라이터 
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
@@ -129,6 +144,9 @@ namespace FTP_Project
         // TreeView 폴더 기준으로 노드 경로를 가져옴
         private void FTPManger_Load(object sender, EventArgs e)
         {
+            //Thread receiveThread = new Thread(new ThreadStart(Receive));
+            //receiveThread.IsBackground = true;
+            //receiveThread.Start();
             // 내 드라이브의 모든 폴더 경로 가져오기
             DriveInfo[] allDrives = DriveInfo.GetDrives();
           
@@ -163,6 +181,33 @@ namespace FTP_Project
             listView1.FullRowSelect = true;
             listView2.FullRowSelect = true;
         }
+
+        //private void Receive()
+        //{
+        //    while (true)
+        //    {
+        //        if (client.Connected)
+        //        {
+        //            try
+        //            {
+        //                NetworkStream stream = client.GetStream();
+        //                byte[] buffer = new byte[1024];
+        //                int bytes = stream.Read(buffer, 0, buffer.Length);
+        //                if (bytes <= 0)
+        //                {
+        //                    continue;
+        //                }
+
+        //                string message = Encoding.UTF8.GetString(buffer, 0, bytes);
+        //                Console.WriteLine("[Other] " + message);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Debug.WriteLine(ex.ToString());
+        //            }
+        //        }
+        //    }
+        //}
         // 디렉토리 정보를 Treeview에 뿌려주기
         private void Fill(TreeNode dirNode)
         {
@@ -358,15 +403,43 @@ namespace FTP_Project
                 return;
             }
 
-            result = ftp.ConnectToServer(FTPIpAddrTxt.Text, FTPUserIdTxt.Text, FTPUserPwTxt.Text);
-            if (!result)
+            //result = ftp.ConnectToServer(FTPIpAddrTxt.Text, FTPUserIdTxt.Text, FTPUserPwTxt.Text);
+            Thread thread1 = new Thread(connect);  // Thread 객채 생성, Form과는 별도 쓰레드에서 connect 함수가 실행됨.
+            thread1.IsBackground = true;  // Form이 종료되면 thread1도 종료.
+            thread1.Start();  // thread1 시작.
+
+
+
+            
+        }
+
+        private void connect()  // thread1에 연결된 함수. 메인폼과는 별도로 동작한다.
+        {
+            TcpClient tcpClient1 = new TcpClient();  // TcpClient 객체 생성
+            IPEndPoint ipEnd = new IPEndPoint(IPAddress.Parse("127.0.0.1"), int.Parse("21"));  // IP주소와 Port번호를 할당
+            tcpClient1.Connect(ipEnd);  // 서버에 연결 요청
+            
+           
+            if (textBox1.InvokeRequired)
             {
-                MessageBox.Show("FTP 접속 실패하였습니다, 정보를 확인해주세요.");
-                return;
+                textBox1.Invoke(new MethodInvoker(delegate { textBox1.Text = "서버 연결됨..."; }));
+            }
+            else
+            {
+                textBox1.Text = "서버 연결됨...";
             }
 
-            MessageBox.Show("FTP 접속 성공");
-            LoadDirectoryTree("/");
+            streamReader = new StreamReader(tcpClient1.GetStream());  // 읽기 스트림 연결
+            streamWriter = new StreamWriter(tcpClient1.GetStream());  // 쓰기 스트림 연결
+            streamWriter.AutoFlush = true;  // 쓰기 버퍼 자동으로 뭔가 처리..
+
+            while (true)  // 클라이언트가 연결되어 있는 동안
+            {
+                //string receiveData1 = streamReader.ReadLine();  // 수신 데이타를 읽어서 receiveData1 변수에 저장
+                //writeRichTextbox(receiveData1);  // 데이타를 수신창에 쓰기
+                string sendData = FTPUserIdTxt.Text;
+                streamWriter.Write(sendData);
+            }
         }
 
 
@@ -377,91 +450,91 @@ namespace FTP_Project
             TreeNode rootNode = new TreeNode(path);
             ftpDirectory.Nodes.Add(rootNode);
 
-            AddDirectoryNodes(rootNode, path);
+            //AddDirectoryNodes(rootNode, path);
             rootNode.Expand();
         }
 
         // remote 폴더, 파일 가져오는 메소드
-        private void AddDirectoryNodes(TreeNode treeNode, string path)
-        {
-            List<string> directories = ftp.GetDirectoryListing(path);
+        //private void AddDirectoryNodes(TreeNode treeNode, string path)
+        //{
+        //     List<string> directories = ftp.GetDirectoryListing(path);
 
-            foreach (string dir in directories)
-            {
-                string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
-                string name = parts[8];
+        //    foreach (string dir in directories)
+        //    {
+        //        string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+        //        string name = parts[8];
 
-                if (dir.StartsWith("d"))
-                {
-                    // 디렉토리인 경우
-                    TreeNode dirNode = new TreeNode(name);
-                    treeNode.Nodes.Add(dirNode);
-                    AddDirectoryNodes(dirNode, path + "/" + name);
-                }
-                else
-                {
-                    // 파일인 경우
-                    TreeNode fileNode = new TreeNode(name);
-                    treeNode.Nodes.Add(fileNode);
-                }
-            }
-        }
+        //        if (dir.StartsWith("d"))
+        //        {
+        //            // 디렉토리인 경우
+        //            TreeNode dirNode = new TreeNode(name);
+        //            treeNode.Nodes.Add(dirNode);
+        //            AddDirectoryNodes(dirNode, path + "/" + name);
+        //        }
+        //        else
+        //        {
+        //            // 파일인 경우
+        //            TreeNode fileNode = new TreeNode(name);
+        //            treeNode.Nodes.Add(fileNode);
+        //        }
+        //    }
+        //}
 
         private void treeView2_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            SettingRemoteListView(e.Node.FullPath);
+            //SettingRemoteListView(e.Node.FullPath);
         }
 
-        private void SettingRemoteListView(string sFullPath)
-        {
-            try
-            {
-                listView2.Items.Clear();
+        //private void SettingRemoteListView(string sFullPath)
+        //{
+        //    try
+        //    {
+        //        listView2.Items.Clear();
 
-                RemoteTextBox.Text = sFullPath;
+        //        RemoteTextBox.Text = sFullPath;
 
-                List<string> directories = ftp.GetDirectoryListing(sFullPath);
-                List<string> files = ftp.GetDirectoryListing(sFullPath);
+        //        List<string> directories = ftp.GetDirectoryListing(sFullPath);
+        //        List<string> files = ftp.GetDirectoryListing(sFullPath);
 
-                int DirectCount = 0;
-                foreach (string dir in directories)
-                {
-                    string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
-                    string name = parts[8];
-                    string date = parts[5] + " " + parts[6] + " " + parts[7];
+        //        int DirectCount = 0;
+        //        foreach (string dir in directories)
+        //        {
+        //            string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+        //            string name = parts[8];
+        //            string date = parts[5] + " " + parts[6] + " " + parts[7];
 
-                    ListViewItem lsvitem = new ListViewItem();
-                    lsvitem.Text = name;
-                    listView2.Items.Add(lsvitem);
-                    listView2.Items[DirectCount].SubItems.Add(date);
-                    listView2.Items[DirectCount].SubItems.Add("폴더");
-                    listView2.Items[DirectCount].SubItems.Add("");
-                    DirectCount++;
-                }
+        //            ListViewItem lsvitem = new ListViewItem();
+        //            lsvitem.Text = name;
+        //            listView2.Items.Add(lsvitem);
+        //            listView2.Items[DirectCount].SubItems.Add(date);
+        //            listView2.Items[DirectCount].SubItems.Add("폴더");
+        //            listView2.Items[DirectCount].SubItems.Add("");
+        //            DirectCount++;
+        //        }
 
-                int Count = 0;
-                foreach (string file in files)
-                {
-                    string[] parts = file.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
-                    string name = parts[8];
-                    string date = parts[5] + " " + parts[6] + " " + parts[7];
-                    string size = parts[4];
+        //        int Count = 0;
+        //        foreach (string file in files)
+        //        {
+        //            string[] parts = file.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+        //            string name = parts[8];
+        //            string date = parts[5] + " " + parts[6] + " " + parts[7];
+        //            string size = parts[4];
 
-                    ListViewItem lsvitem = new ListViewItem();
-                    lsvitem.Text = name;
-                    listView2.Items.Add(lsvitem);
-                    listView2.Items[Count].SubItems.Add(date);
-                    listView2.Items[Count].SubItems.Add("파일");
-                    listView2.Items[Count].SubItems.Add(size);
-                    Count++;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("에러 발생 : " + ex.Message);
-            }
-            ftpDirectory.Nodes[0].Expand();
-        }
+        //            ListViewItem lsvitem = new ListViewItem();
+        //            lsvitem.Text = name;
+        //            listView2.Items.Add(lsvitem);
+        //            listView2.Items[Count].SubItems.Add(date);
+        //            listView2.Items[Count].SubItems.Add("파일");
+        //            listView2.Items[Count].SubItems.Add(size);
+        //            Count++;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("에러 발생 : " + ex.Message);
+        //    }
+        //    ftpDirectory.Nodes[0].Expand();
+        //}
 
         private void panel4_Paint(object sender, PaintEventArgs e)
         {
@@ -520,8 +593,43 @@ namespace FTP_Project
 
         private void button1_Click(object sender, EventArgs e)
         {
+            SyncListViews(listView1, listView2);
+        }
+        private void SyncListViews(System.Windows.Forms.ListView source, System.Windows.Forms.ListView target)
+        {
+            target.Items.Clear();
+            HashSet<string> targetItems = new HashSet<string>();
+            foreach (ListViewItem item in target.Items)
+            {
+                targetItems.Add(item.Text);
+            }
 
+            foreach (ListViewItem item in source.Items)
+            {
+                if (!targetItems.Contains(item.Text))
+                {
+                    ListViewItem clonedItem = (ListViewItem)item.Clone();
+                    target.Items.Add(clonedItem);
+                }
+            }
         }
 
+        private void Disconnect_Click(object sender, EventArgs e)
+        {
+            client.Close();
+            if (textBox1.InvokeRequired)
+            {
+                textBox1.Invoke(new MethodInvoker(delegate { textBox1.Text = "서버 해제됨...."; }));
+            }
+            else
+            {
+                textBox1.Text = "서버 해제됨....";
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
