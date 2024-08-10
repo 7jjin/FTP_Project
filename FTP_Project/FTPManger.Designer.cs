@@ -50,7 +50,13 @@
             this.listView2 = new System.Windows.Forms.ListView();
             this.listView1 = new System.Windows.Forms.ListView();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+<<<<<<< HEAD
             this.syncBtn = new System.Windows.Forms.Button();
+=======
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.Disconnect = new System.Windows.Forms.Button();
+>>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -61,6 +67,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.Disconnect);
             this.panel1.Controls.Add(this.ConnectionBtn);
             this.panel1.Controls.Add(this.FTPUserPwTxt);
             this.panel1.Controls.Add(this.label1);
@@ -76,10 +83,17 @@
             // 
             // ConnectionBtn
             // 
+<<<<<<< HEAD
             this.ConnectionBtn.Location = new System.Drawing.Point(631, 34);
             this.ConnectionBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ConnectionBtn.Name = "ConnectionBtn";
             this.ConnectionBtn.Size = new System.Drawing.Size(85, 28);
+=======
+            this.ConnectionBtn.Location = new System.Drawing.Point(681, 11);
+            this.ConnectionBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.ConnectionBtn.Name = "ConnectionBtn";
+            this.ConnectionBtn.Size = new System.Drawing.Size(95, 28);
+>>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
             this.ConnectionBtn.TabIndex = 6;
             this.ConnectionBtn.Text = "Connect";
             this.ConnectionBtn.UseVisualStyleBackColor = true;
@@ -153,6 +167,10 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45.32164F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(801, 428);
             this.tableLayoutPanel1.TabIndex = 1;
+<<<<<<< HEAD
+=======
+            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint_1);
+>>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
             // 
             // panel2
             // 
@@ -259,6 +277,19 @@
             this.listView2.TabIndex = 3;
             this.listView2.UseCompatibleStateImageBehavior = false;
             // 
+            // listView2
+            // 
+            this.listView2.AllowDrop = true;
+            this.listView2.HideSelection = false;
+            this.listView2.Location = new System.Drawing.Point(400, 236);
+            this.listView2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.listView2.Name = "listView2";
+            this.listView2.Size = new System.Drawing.Size(395, 188);
+            this.listView2.TabIndex = 3;
+            this.listView2.UseCompatibleStateImageBehavior = false;
+            this.listView2.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView2_DragDrop);
+            this.listView2.DragEnter += new System.Windows.Forms.DragEventHandler(this.listView2_DragEnter);
+            // 
             // listView1
             // 
             this.listView1.AllowDrop = true;
@@ -272,6 +303,7 @@
             // 
             // syncBtn
             // 
+<<<<<<< HEAD
             this.syncBtn.Location = new System.Drawing.Point(691, 534);
             this.syncBtn.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.syncBtn.Name = "syncBtn";
@@ -280,13 +312,47 @@
             this.syncBtn.Text = "동기화";
             this.syncBtn.UseVisualStyleBackColor = true;
             this.syncBtn.Click += new System.EventHandler(this.button1_Click);
+=======
+            this.button1.Location = new System.Drawing.Point(691, 534);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(105, 48);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "동기화";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+>>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(122, 568);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(422, 25);
+            this.textBox1.TabIndex = 3;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
+            // Disconnect
+            // 
+            this.Disconnect.Location = new System.Drawing.Point(681, 41);
+            this.Disconnect.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Disconnect.Name = "Disconnect";
+            this.Disconnect.Size = new System.Drawing.Size(95, 28);
+            this.Disconnect.TabIndex = 7;
+            this.Disconnect.Text = "Disconnect";
+            this.Disconnect.UseVisualStyleBackColor = true;
+            this.Disconnect.Click += new System.EventHandler(this.Disconnect_Click);
             // 
             // FTPManger
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(802, 662);
+<<<<<<< HEAD
             this.Controls.Add(this.syncBtn);
+=======
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.button1);
+>>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panel1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -303,6 +369,7 @@
             this.panel3.PerformLayout();
             this.panel5.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -330,7 +397,13 @@
         private System.Windows.Forms.TextBox RemoteTextBox;
         private System.Windows.Forms.ListView listView2;
         private System.Windows.Forms.TreeView ftpDirectory;
+<<<<<<< HEAD
         private System.Windows.Forms.Button syncBtn;
+=======
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button Disconnect;
+>>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
     }
 }
 
