@@ -5,12 +5,15 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Net.WebRequestMethods;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
+using File = System.IO.File;
 
 namespace FTP_Project
 {
@@ -48,20 +51,7 @@ namespace FTP_Project
             listView2.DragOver += new DragEventHandler(listView_DragOver);
         }
 
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
 
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         // ItemDrag 이벤트 핸들러
         private void listView_ItemDrag(object sender, ItemDragEventArgs e)
@@ -108,6 +98,7 @@ namespace FTP_Project
         private void listView_DragDrop(object sender, DragEventArgs e)
         {
             System.Windows.Forms.ListView listView = sender as System.Windows.Forms.ListView;
+            System.Windows.Forms.ListView otherListView = listView == listView1 ? listView2 : listView1;
 
             if (e.Data.GetDataPresent(typeof(System.Windows.Forms.ListView.SelectedListViewItemCollection)))
             {
@@ -120,6 +111,15 @@ namespace FTP_Project
                 {
                     ListViewItem clonedItem = (ListViewItem)item.Clone();
                     listView.Items.Insert(targetIndex, clonedItem);
+
+                    // 파일 이동 로직 추가
+                    string sourcePath = Path.Combine(localTextBox.Text, item.Text);
+                    string targetPath = Path.Combine(RemoteTextBox.Text, item.Text);
+                    if (File.Exists(sourcePath))
+                    {
+                        File.Move(sourcePath, targetPath);
+                    }
+
                     item.Remove();
                     targetIndex++;
                 }
@@ -246,95 +246,48 @@ namespace FTP_Project
         {
             try
             {
-                //기존의 파일 목록 제거
+                // 기존의 파일 목록 제거
                 listView1.Items.Clear();
-                //현재 경로를 표시
 
+                // 현재 경로를 표시
                 localTextBox.Text = sFullPath;
                 DirectoryInfo dir = new DirectoryInfo(sFullPath);
-                int DirectCount = 0;
-                //하부 데렉토르 보여주기
-                foreach (DirectoryInfo dirItem in dir.GetDirectories())
+
+                // 폴더 및 파일 목록 가져오기
+                var directories = dir.GetDirectories();
+                var files = dir.GetFiles();
+
+                // 폴더 목록 추가
+                foreach (DirectoryInfo dirItem in directories)
                 {
-                    //하부 디렉토리가 존재할 경우 ListView에 추가
-                    //ListViewItem 객체를 생성
-                    ListViewItem lsvitem = new ListViewItem();
-                    //생성된 ListViewItem 객체에 똑같은 이미지를 할당
-                    lsvitem.Text = dirItem.Name;
-                    //아이템을 ListView(listView1)에 추가
+                    ListViewItem lsvitem = new ListViewItem(dirItem.Name);
+                    lsvitem.SubItems.Add(dirItem.CreationTime.ToString());
+                    lsvitem.SubItems.Add("폴더");
+                    lsvitem.SubItems.Add($"{dirItem.GetFiles().Length} files"); // 폴더 안의 파일 개수
                     listView1.Items.Add(lsvitem);
-                    listView1.Items[DirectCount].SubItems.Add(dirItem.CreationTime.ToString());
-                    listView1.Items[DirectCount].SubItems.Add("폴더");
-                    listView1.Items[DirectCount].SubItems.Add(dirItem.GetFiles().Length.ToString() + " files");
-                    DirectCount++;
                 }
-                //디렉토리에 존재하는 파일목록 보여주기
-                FileInfo[] files = dir.GetFiles();
-                int Count = 0;
+
+                // 파일 목록 추가
                 foreach (FileInfo fileinfo in files)
                 {
-                    listView1.Items.Add(fileinfo.Name);
-                    if (fileinfo.LastWriteTime != null)
-                    {
-                        listView1.Items[Count].SubItems.Add(fileinfo.LastWriteTime.ToString());
-                    }
-                    else
-                    {
-                        listView1.Items[Count].SubItems.Add(fileinfo.CreationTime.ToString());
-                    }
-                    listView1.Items[Count].SubItems.Add(fileinfo.Attributes.ToString());
-                    listView1.Items[Count].SubItems.Add(fileinfo.Length.ToString());
-                    Count++;
+                    ListViewItem lsvitem = new ListViewItem(fileinfo.Name);
+                    lsvitem.SubItems.Add(fileinfo.LastWriteTime.ToString());
+                    lsvitem.SubItems.Add("파일");
+                    lsvitem.SubItems.Add(fileinfo.Length.ToString());
+                    listView1.Items.Add(lsvitem);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("에러 발생 : " + ex.Message);
             }
+
+            // 트리 뷰의 첫 번째 노드 확장
             myDirectory.Nodes[0].Expand();
         }
 
 
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel1_Paint_1(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label2_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click_2(object sender, EventArgs e)
-        {
-
-        }
-
-        private void FTPIpAddrTxt_TextChanged(object sender, EventArgs e)
-        {
-
-        }
 
         // FTP 연결 버튼 이벤트
         private void ConnectionBtn_Click_1(object sender, EventArgs e)
@@ -434,7 +387,15 @@ namespace FTP_Project
                     lsvitem.Text = name;
                     listView2.Items.Add(lsvitem);
                     listView2.Items[DirectCount].SubItems.Add(date);
-                    listView2.Items[DirectCount].SubItems.Add("폴더");
+                    if (parts[0].StartsWith("d"))
+                    {
+                        listView2.Items[DirectCount].SubItems.Add("폴더");
+                       
+                    }
+                    else
+                    {
+                        listView2.Items[DirectCount].SubItems.Add("파일");
+                    }
                     listView2.Items[DirectCount].SubItems.Add("");
                     DirectCount++;
                 }
@@ -463,64 +424,118 @@ namespace FTP_Project
             ftpDirectory.Nodes[0].Expand();
         }
 
-        private void panel4_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void localTextBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ftpDirectory_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-
-        }
-
-        private void listView1_DragDrop(object sender, DragEventArgs e)
-        {
-
-        }
-        private void listView1_DragEnter(object sender, DragEventArgs e)
-        {
-
-        }
-
-        
-
-        private void listView2_DragDrop(object sender, DragEventArgs e)
-        {
-
-        }
-        private void listView2_DragEnter(object sender, DragEventArgs e)
-        {
-
-        }
-
-        private void listView1_SelectedIndexChanged_1(object sender, EventArgs e)
-        {
-
-        }
+      
 
         private void button1_Click(object sender, EventArgs e)
         {
+            SyncListViews(listView1, listView2);
+       
+        }
 
+        private void UploadDirectory(string localDirectoryPath, string remoteDirectoryPath)
+        {
+            // Get list of files and directories in the local directory
+            DirectoryInfo localDir = new DirectoryInfo(localDirectoryPath);
+
+            // Ensure the remote directory exists
+            CreateRemoteDirectory(remoteDirectoryPath);
+
+            // Upload all files in the current directory
+            foreach (FileInfo file in localDir.GetFiles())
+            {
+                string localFilePath = file.FullName;
+                string remoteFilePath = Path.Combine(remoteDirectoryPath, file.Name).Replace("\\", "/");
+                bool uploadSuccess = ftp.UploadFile(localFilePath, remoteFilePath);
+
+                if (!uploadSuccess)
+                {
+                    MessageBox.Show($"Failed to upload {file.Name}.");
+                }
+            }
+
+            // Recursively upload all subdirectories
+            foreach (DirectoryInfo subDir in localDir.GetDirectories())
+            {
+                string localSubDirPath = subDir.FullName;
+                string remoteSubDirPath = Path.Combine(remoteDirectoryPath, subDir.Name).Replace("\\", "/");
+                UploadDirectory(localSubDirPath, remoteSubDirPath);
+            }
+        }
+
+        private void CreateRemoteDirectory(string remoteDirectoryPath)
+        {
+            try
+            {
+                string url = $"FTP://{FTPIpAddrTxt.Text}/{remoteDirectoryPath}".Replace("\\", "/");
+
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+                request.Method = WebRequestMethods.Ftp.MakeDirectory;
+                request.Credentials = new NetworkCredential(this.FTPUserIdTxt.Text, this.FTPUserPwTxt.Text);
+                request.UseBinary = true;
+                request.UsePassive = true;
+                request.KeepAlive = false;
+
+                try
+                {
+                    using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                    {
+                        // Directory creation successful, handle the response if needed
+                    }
+                }
+                catch (WebException ex)
+                {
+                    if (ex.Response is FtpWebResponse response && response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                    {
+                        // Directory already exists
+                    }
+                    else
+                    {
+                        // Handle other errors
+                        MessageBox.Show($"Failed to create remote directory {remoteDirectoryPath}: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to create remote directory {remoteDirectoryPath}: {ex.Message}");
+            }
+        }
+
+
+        private void SyncListViews(System.Windows.Forms.ListView source, System.Windows.Forms.ListView target)
+        {
+            // Get the remote path from the FTP directory
+            string remotePath = RemoteTextBox.Text;
+
+            foreach (ListViewItem item in source.Items)
+            {
+                string localFilePath = Path.Combine(localTextBox.Text, item.Text);
+
+                if (Directory.Exists(localFilePath))
+                {
+                    // If the item is a directory, upload the directory recursively
+                    string remoteDirectoryPath = Path.Combine(remotePath, item.Text).Replace("\\", "/");
+                    UploadDirectory(localFilePath, remoteDirectoryPath);
+                }
+                else if (File.Exists(localFilePath))
+                {
+                    // If the item is a file, upload the file
+                    string remoteFilePath = Path.Combine(remotePath, item.Text).Replace("\\", "/");
+                    bool uploadSuccess = ftp.UploadFile(localFilePath, remoteFilePath);
+
+                    if (!uploadSuccess)
+                    {
+                        MessageBox.Show($"Failed to upload {item.Text}.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show($"Local file or directory not found: {localFilePath}");
+                }
+            }
+
+            // Optionally, reload the remote directory to reflect new files and directories
+            SettingRemoteListView(remotePath);
         }
 
     }

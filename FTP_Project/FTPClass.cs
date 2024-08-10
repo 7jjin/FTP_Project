@@ -117,5 +117,44 @@ namespace FTP_Project
 
             return directories;
         }
+        
+        // 디렉토리 업로드 메서드
+        public bool UploadFile(string localFilePath, string remoteFilePath)
+        {
+            try
+            {
+                FileInfo fileInfo = new FileInfo(localFilePath);
+                string url = $"FTP://{this.ipAddr}/{remoteFilePath}";
+
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+                request.Method = WebRequestMethods.Ftp.UploadFile;
+                request.Credentials = new NetworkCredential(this.userId, this.pwd);
+                request.UseBinary = true;
+                request.UsePassive = true;
+                request.KeepAlive = false;
+
+                using (FileStream fileStream = fileInfo.OpenRead())
+                using (Stream requestStream = request.GetRequestStream())
+                {
+                    fileStream.CopyTo(requestStream);
+                }
+
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                {
+                    // Optional: Handle response here if needed
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this.LastException = ex;
+                // Handle exception
+                return false;
+            }
+        }
+
+
+
     }
 }
