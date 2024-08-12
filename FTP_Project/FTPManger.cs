@@ -2,21 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Text;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-<<<<<<< HEAD
-=======
-using System.Net.Sockets;
->>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Contexts;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Forms;
 using static System.Net.WebRequestMethods;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -28,19 +22,13 @@ namespace FTP_Project
     public partial class FTPManger : Form
     {
         // FTP 연결 확인 값
-        //private bool result = false;
-        //private FTPClass ftp = null;
-
         private bool result = false;
-        private static TcpClient client = new TcpClient();
+        private FTPClass ftp = null;
 
         public FTPManger()
-            
         {
-
             InitializeComponent();
-            //ftp = new FTPClass();
-            
+            ftp = new FTPClass();
             FTPIpAddrTxt.Focus();
 
             // 각각의 TextBox를 Default값으로 넣는다.
@@ -65,14 +53,6 @@ namespace FTP_Project
             listView2.DragOver += new DragEventHandler(listView_DragOver);
         }
 
-<<<<<<< HEAD
-=======
-        StreamReader streamReader;  // 데이타 읽기 위한 스트림리더
-        StreamWriter streamWriter;  // 데이타 쓰기 위한 스트림라이터 
-
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
->>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
 
 
         // ItemDrag 이벤트 핸들러
@@ -151,12 +131,9 @@ namespace FTP_Project
         // TreeView 폴더 기준으로 노드 경로를 가져옴
         private void FTPManger_Load(object sender, EventArgs e)
         {
-            //Thread receiveThread = new Thread(new ThreadStart(Receive));
-            //receiveThread.IsBackground = true;
-            //receiveThread.Start();
             // 내 드라이브의 모든 폴더 경로 가져오기
             DriveInfo[] allDrives = DriveInfo.GetDrives();
-          
+
             foreach (DriveInfo dname in allDrives)
             {
                 if (dname.DriveType == DriveType.Fixed)
@@ -174,47 +151,20 @@ namespace FTP_Project
             listView2.View = View.Details;
 
             //ListView Details 속성을 위한 헤더 추가
-            listView1.Columns.Add("이름", listView1.Width / 4, HorizontalAlignment.Left);
-            listView1.Columns.Add("수정한 날짜", listView1.Width / 4, HorizontalAlignment.Left);
-            listView1.Columns.Add("유형", listView1.Width / 4, HorizontalAlignment.Left);
-            listView1.Columns.Add("크기", listView1.Width / 4, HorizontalAlignment.Left);
+            listView1.Columns.Add("이름", listView1.Width / 3, HorizontalAlignment.Left);
+            listView1.Columns.Add("수정한 날짜", listView1.Width / 3, HorizontalAlignment.Left);
+            listView1.Columns.Add("유형", listView1.Width / 3, HorizontalAlignment.Left);
 
-            listView2.Columns.Add("이름", listView2.Width / 4, HorizontalAlignment.Left);
-            listView2.Columns.Add("수정한 날짜", listView2.Width / 4, HorizontalAlignment.Left);
-            listView2.Columns.Add("유형", listView2.Width / 4, HorizontalAlignment.Left);
-            listView2.Columns.Add("크기", listView2.Width / 4, HorizontalAlignment.Left);
+
+            listView2.Columns.Add("이름", listView2.Width / 3, HorizontalAlignment.Left);
+            listView2.Columns.Add("수정한 날짜", listView2.Width / 3, HorizontalAlignment.Left);
+            listView2.Columns.Add("유형", listView2.Width / 3, HorizontalAlignment.Left);
+
 
             //행 단위 선택 가능
             listView1.FullRowSelect = true;
             listView2.FullRowSelect = true;
         }
-
-        //private void Receive()
-        //{
-        //    while (true)
-        //    {
-        //        if (client.Connected)
-        //        {
-        //            try
-        //            {
-        //                NetworkStream stream = client.GetStream();
-        //                byte[] buffer = new byte[1024];
-        //                int bytes = stream.Read(buffer, 0, buffer.Length);
-        //                if (bytes <= 0)
-        //                {
-        //                    continue;
-        //                }
-
-        //                string message = Encoding.UTF8.GetString(buffer, 0, bytes);
-        //                Console.WriteLine("[Other] " + message);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Debug.WriteLine(ex.ToString());
-        //            }
-        //        }
-        //    }
-        //}
         // 디렉토리 정보를 Treeview에 뿌려주기
         private void Fill(TreeNode dirNode)
         {
@@ -315,7 +265,6 @@ namespace FTP_Project
                     ListViewItem lsvitem = new ListViewItem(dirItem.Name);
                     lsvitem.SubItems.Add(dirItem.CreationTime.ToString());
                     lsvitem.SubItems.Add("폴더");
-                    lsvitem.SubItems.Add($"{dirItem.GetFiles().Length} files"); // 폴더 안의 파일 개수
                     listView1.Items.Add(lsvitem);
                 }
 
@@ -325,7 +274,6 @@ namespace FTP_Project
                     ListViewItem lsvitem = new ListViewItem(fileinfo.Name);
                     lsvitem.SubItems.Add(fileinfo.LastWriteTime.ToString());
                     lsvitem.SubItems.Add("파일");
-                    lsvitem.SubItems.Add(fileinfo.Length.ToString());
                     listView1.Items.Add(lsvitem);
                 }
             }
@@ -363,43 +311,16 @@ namespace FTP_Project
                 return;
             }
 
-            //result = ftp.ConnectToServer(FTPIpAddrTxt.Text, FTPUserIdTxt.Text, FTPUserPwTxt.Text);
-            Thread thread1 = new Thread(connect);  // Thread 객채 생성, Form과는 별도 쓰레드에서 connect 함수가 실행됨.
-            thread1.IsBackground = true;  // Form이 종료되면 thread1도 종료.
-            thread1.Start();  // thread1 시작.
-
-
-
-            
-        }
-
-        private void connect()  // thread1에 연결된 함수. 메인폼과는 별도로 동작한다.
-        {
-            TcpClient tcpClient1 = new TcpClient();  // TcpClient 객체 생성
-            IPEndPoint ipEnd = new IPEndPoint(IPAddress.Parse("127.0.0.1"), int.Parse("21"));  // IP주소와 Port번호를 할당
-            tcpClient1.Connect(ipEnd);  // 서버에 연결 요청
-            
-           
-            if (textBox1.InvokeRequired)
+            result = ftp.ConnectToServer(FTPIpAddrTxt.Text, FTPUserIdTxt.Text, FTPUserPwTxt.Text);
+            if (!result)
             {
-                textBox1.Invoke(new MethodInvoker(delegate { textBox1.Text = "서버 연결됨..."; }));
-            }
-            else
-            {
-                textBox1.Text = "서버 연결됨...";
+                MessageBox.Show("FTP 접속 실패하였습니다, 정보를 확인해주세요.");
+                return;
             }
 
-            streamReader = new StreamReader(tcpClient1.GetStream());  // 읽기 스트림 연결
-            streamWriter = new StreamWriter(tcpClient1.GetStream());  // 쓰기 스트림 연결
-            streamWriter.AutoFlush = true;  // 쓰기 버퍼 자동으로 뭔가 처리..
-
-            while (true)  // 클라이언트가 연결되어 있는 동안
-            {
-                //string receiveData1 = streamReader.ReadLine();  // 수신 데이타를 읽어서 receiveData1 변수에 저장
-                //writeRichTextbox(receiveData1);  // 데이타를 수신창에 쓰기
-                string sendData = FTPUserIdTxt.Text;
-                streamWriter.Write(sendData);
-            }
+            MessageBox.Show("FTP 접속 성공");
+            syncBtn.Enabled = true;
+            LoadDirectoryTree("/");
         }
 
 
@@ -410,68 +331,79 @@ namespace FTP_Project
             TreeNode rootNode = new TreeNode(path);
             ftpDirectory.Nodes.Add(rootNode);
 
-            //AddDirectoryNodes(rootNode, path);
+            AddDirectoryNodes(rootNode, path);
             rootNode.Expand();
         }
 
         // remote 폴더, 파일 가져오는 메소드
-        //private void AddDirectoryNodes(TreeNode treeNode, string path)
-        //{
-        //     List<string> directories = ftp.GetDirectoryListing(path);
+        private void AddDirectoryNodes(TreeNode treeNode, string path)
+        {
+            List<string> directories = ftp.GetDirectoryListing(path);
 
-        //    foreach (string dir in directories)
-        //    {
-        //        string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
-        //        string name = parts[8];
+            foreach (string dir in directories)
+            {
+                string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+                string name = parts[3];
 
-        //        if (dir.StartsWith("d"))
-        //        {
-        //            // 디렉토리인 경우
-        //            TreeNode dirNode = new TreeNode(name);
-        //            treeNode.Nodes.Add(dirNode);
-        //            AddDirectoryNodes(dirNode, path + "/" + name);
-        //        }
-        //        else
-        //        {
-        //            // 파일인 경우
-        //            TreeNode fileNode = new TreeNode(name);
-        //            treeNode.Nodes.Add(fileNode);
-        //        }
-        //    }
-        //}
+                if (parts[2] == "<DIR>")
+                {
+                    // 디렉토리인 경우
+                    TreeNode dirNode = new TreeNode(name);
+                    treeNode.Nodes.Add(dirNode);
+                    AddDirectoryNodes(dirNode, path + "/" + name);
+                }
+                else
+                {
+                    // 파일인 경우
+                    TreeNode fileNode = new TreeNode(name);
+                    treeNode.Nodes.Add(fileNode);
+                }
+            }
+        }
 
         private void treeView2_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            //SettingRemoteListView(e.Node.FullPath);
+            SettingRemoteListView(e.Node.FullPath);
         }
 
-        //private void SettingRemoteListView(string sFullPath)
-        //{
-        //    try
-        //    {
-        //        listView2.Items.Clear();
+        private void SettingRemoteListView(string sFullPath)
+        {
+            try
+            {
+                listView2.Items.Clear();
 
-        //        RemoteTextBox.Text = sFullPath;
+                RemoteTextBox.Text = sFullPath;
 
-        //        List<string> directories = ftp.GetDirectoryListing(sFullPath);
-        //        List<string> files = ftp.GetDirectoryListing(sFullPath);
+                List<string> directories = ftp.GetDirectoryListing(sFullPath);
+                List<string> files = ftp.GetDirectoryListing(sFullPath);
 
-        //        int DirectCount = 0;
-        //        foreach (string dir in directories)
-        //        {
-        //            string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
-        //            string name = parts[8];
-        //            string date = parts[5] + " " + parts[6] + " " + parts[7];
+                int DirectCount = 0;
+                foreach (string dir in directories)
+                {
+                    string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+                    string name = parts[3];
+                    string date = parts[0] + " " + parts[1];
+                    // 원본 데이터 형식 정의
+                    string originalFormat = "MM-dd-yy hh:mmtt";
 
-<<<<<<< HEAD
+                    // DateTime 객체로 변환
+                    DateTime dateTime = DateTime.ParseExact(date, originalFormat, CultureInfo.InvariantCulture);
+
+                    // 원하는 형식으로 변환
+                    string targetFormat = "yyyy-MM-dd tt h:mm";
+                    string result = dateTime.ToString(targetFormat, CultureInfo.InvariantCulture);
+
+
+                    // 오전/오후 표시를 한글로 변경
+                    date = result.Replace("AM", "오전").Replace("PM", "오후");
+
                     ListViewItem lsvitem = new ListViewItem();
                     lsvitem.Text = name;
                     listView2.Items.Add(lsvitem);
                     listView2.Items[DirectCount].SubItems.Add(date);
-                    if (parts[0].StartsWith("d"))
+                    if (parts[2] == "<DIR>")
                     {
                         listView2.Items[DirectCount].SubItems.Add("폴더");
-                       
                     }
                     else
                     {
@@ -480,64 +412,40 @@ namespace FTP_Project
                     listView2.Items[DirectCount].SubItems.Add("");
                     DirectCount++;
                 }
-=======
-        //            ListViewItem lsvitem = new ListViewItem();
-        //            lsvitem.Text = name;
-        //            listView2.Items.Add(lsvitem);
-        //            listView2.Items[DirectCount].SubItems.Add(date);
-        //            listView2.Items[DirectCount].SubItems.Add("폴더");
-        //            listView2.Items[DirectCount].SubItems.Add("");
-        //            DirectCount++;
-        //        }
->>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("에러 발생 : " + ex.Message);
+            }
+            ftpDirectory.Nodes[0].Expand();
+        }
 
-        //        int Count = 0;
-        //        foreach (string file in files)
-        //        {
-        //            string[] parts = file.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
-        //            string name = parts[8];
-        //            string date = parts[5] + " " + parts[6] + " " + parts[7];
-        //            string size = parts[4];
 
-        //            ListViewItem lsvitem = new ListViewItem();
-        //            lsvitem.Text = name;
-        //            listView2.Items.Add(lsvitem);
-        //            listView2.Items[Count].SubItems.Add(date);
-        //            listView2.Items[Count].SubItems.Add("파일");
-        //            listView2.Items[Count].SubItems.Add(size);
-        //            Count++;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("에러 발생 : " + ex.Message);
-        //    }
-        //    ftpDirectory.Nodes[0].Expand();
-        //}
-
-      
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (!result)
+            {
+                syncBtn.Enabled = false;
+            }
             SyncListViews(listView1, listView2);
-<<<<<<< HEAD
-       
+
         }
 
-        private void UploadDirectory(string localDirectoryPath, string remoteDirectoryPath)
+        private async Task UploadDirectory(string localDirectoryPath, string remoteDirectoryPath)
         {
             // Get list of files and directories in the local directory
             DirectoryInfo localDir = new DirectoryInfo(localDirectoryPath);
 
             // Ensure the remote directory exists
-            CreateRemoteDirectory(remoteDirectoryPath);
+            await Task.Run(() => CreateRemoteDirectory(remoteDirectoryPath));
 
             // Upload all files in the current directory
             foreach (FileInfo file in localDir.GetFiles())
             {
                 string localFilePath = file.FullName;
                 string remoteFilePath = Path.Combine(remoteDirectoryPath, file.Name).Replace("\\", "/");
-                bool uploadSuccess = ftp.UploadFile(localFilePath, remoteFilePath);
+                bool uploadSuccess = await Task.Run(() => ftp.UploadFile(localFilePath, remoteFilePath));
 
                 if (!uploadSuccess)
                 {
@@ -550,7 +458,7 @@ namespace FTP_Project
             {
                 string localSubDirPath = subDir.FullName;
                 string remoteSubDirPath = Path.Combine(remoteDirectoryPath, subDir.Name).Replace("\\", "/");
-                UploadDirectory(localSubDirPath, remoteSubDirPath);
+                await UploadDirectory(localSubDirPath, remoteSubDirPath);
             }
         }
 
@@ -596,8 +504,20 @@ namespace FTP_Project
 
         private void SyncListViews(System.Windows.Forms.ListView source, System.Windows.Forms.ListView target)
         {
-            // Get the remote path from the FTP directory
-            string remotePath = RemoteTextBox.Text;
+            // 폴더 및 파일 삭제를 위한 프로그래스 바 설정
+            progressBar.Style = ProgressBarStyle.Continuous;
+            lblStatus.Text = "Deleting remote files and directories...";
+            progressBar.Value = 0;
+
+            // 서버의 폴더와 파일 삭제
+            DeleteRemoteDirectory(RemoteTextBox.Text);
+
+            // 업데이트된 진행 상태
+            lblStatus.Text = "Uploading files and directories...";
+            progressBar.Value = 0;
+
+            // 전체 항목 수를 기준으로 프로그래스 바의 최대값 설정
+            progressBar.Maximum = source.Items.Count;
 
             foreach (ListViewItem item in source.Items)
             {
@@ -606,13 +526,13 @@ namespace FTP_Project
                 if (Directory.Exists(localFilePath))
                 {
                     // If the item is a directory, upload the directory recursively
-                    string remoteDirectoryPath = Path.Combine(remotePath, item.Text).Replace("\\", "/");
+                    string remoteDirectoryPath = Path.Combine(RemoteTextBox.Text, item.Text).Replace("\\", "/");
                     UploadDirectory(localFilePath, remoteDirectoryPath);
                 }
                 else if (File.Exists(localFilePath))
                 {
                     // If the item is a file, upload the file
-                    string remoteFilePath = Path.Combine(remotePath, item.Text).Replace("\\", "/");
+                    string remoteFilePath = Path.Combine(RemoteTextBox.Text, item.Text).Replace("\\", "/");
                     bool uploadSuccess = ftp.UploadFile(localFilePath, remoteFilePath);
 
                     if (!uploadSuccess)
@@ -624,48 +544,122 @@ namespace FTP_Project
                 {
                     MessageBox.Show($"Local file or directory not found: {localFilePath}");
                 }
+
+                // 진행 상황 업데이트
+                progressBar.Value++;
+                lblStatus.Text = $"Uploaded {progressBar.Value} of {progressBar.Maximum} items.";
+                Application.DoEvents(); // UI 업데이트
             }
 
-            // Optionally, reload the remote directory to reflect new files and directories
-            SettingRemoteListView(remotePath);
-=======
+            // 진행 상태 업데이트
+            lblStatus.Text = "Sync complete.";
+            progressBar.Value = progressBar.Maximum;
+            logBox.AppendText("성공적으로 동기화를 완료했습니다.");
+            logBox.SelectionStart = logBox.TextLength;
+            logBox.ScrollToCaret();
         }
-        private void SyncListViews(System.Windows.Forms.ListView source, System.Windows.Forms.ListView target)
-        {
-            target.Items.Clear();
-            HashSet<string> targetItems = new HashSet<string>();
-            foreach (ListViewItem item in target.Items)
-            {
-                targetItems.Add(item.Text);
-            }
 
-            foreach (ListViewItem item in source.Items)
+
+        private void DeleteRemoteDirectory(string remoteDirectoryPath)
+        {
+            try
             {
-                if (!targetItems.Contains(item.Text))
+                List<string> directories = ftp.GetDirectoryListing(remoteDirectoryPath);
+
+
+                foreach (string dir in directories)
                 {
-                    ListViewItem clonedItem = (ListViewItem)item.Clone();
-                    target.Items.Add(clonedItem);
+                    string[] parts = dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+                    string name = parts[3];
+                    if (parts[2] == "<DIR>")
+                    {
+                        string dirPath = remoteDirectoryPath + "/" + dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries)[3];
+                        DeleteRemoteDirectory(dirPath);
+                    }
+                    else
+                    {
+                        string filePath = remoteDirectoryPath + "/" + dir.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries)[3];
+                        DeleteRemoteFile(filePath);
+                    }
+                }
+                if (remoteDirectoryPath != RemoteTextBox.Text)
+                {
+                    DeleteEmptyRemoteDirectory(remoteDirectoryPath);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to delete remote directory {remoteDirectoryPath}: {ex.Message}");
+            }
+        }
+
+        private void DeleteEmptyRemoteDirectory(string remoteDirectoryPath)
+        {
+            try
+            {
+                string url = $"FTP://{FTPIpAddrTxt.Text}/{remoteDirectoryPath}".Replace("\\", "/");
+
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+                request.Method = WebRequestMethods.Ftp.RemoveDirectory;
+                request.Credentials = new NetworkCredential(this.FTPUserIdTxt.Text, this.FTPUserPwTxt.Text);
+                request.UseBinary = true;
+                request.UsePassive = true;
+                request.KeepAlive = false;
+
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                {
+                    // Directory deletion successful, handle the response if needed
                 }
             }
->>>>>>> 149e0a116fd61ee36364aca5cf20cb4e539b362e
-        }
-
-        private void Disconnect_Click(object sender, EventArgs e)
-        {
-            client.Close();
-            if (textBox1.InvokeRequired)
+            catch (Exception ex)
             {
-                textBox1.Invoke(new MethodInvoker(delegate { textBox1.Text = "서버 해제됨...."; }));
-            }
-            else
-            {
-                textBox1.Text = "서버 해제됨....";
+                MessageBox.Show($"Failed to delete remote directory {remoteDirectoryPath}: {ex.Message}");
             }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void DeleteRemoteFile(string remoteFilePath)
         {
+            try
+            {
+                string url = $"FTP://{FTPIpAddrTxt.Text}/{remoteFilePath}".Replace("\\", "/");
 
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+                request.Method = WebRequestMethods.Ftp.DeleteFile;
+                request.Credentials = new NetworkCredential(this.FTPUserIdTxt.Text, this.FTPUserPwTxt.Text);
+                request.UseBinary = true;
+                request.UsePassive = true;
+                request.KeepAlive = false;
+
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                {
+                    // File deletion successful, handle the response if needed
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to delete remote file {remoteFilePath}: {ex.Message}");
+            }
+        }
+        private void deleteBtn_Click_1(object sender, EventArgs e)
+        {
+            DeleteRemoteDirectory(RemoteTextBox.Text);
+            MessageBox.Show("삭제 성고햇씁니다.");
+        }
+
+        private void DisconnectBtn_Click(object sender, EventArgs e)
+        {
+            string url = $"FTP://{FTPIpAddrTxt.Text}/".Replace("\\", "/");
+            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+            MessageBox.Show("접속이 해제되었습니다.");
+            request.Abort();
+            FTPIpAddrTxt.Text = "";
+            FTPUserIdTxt.Text = "";
+            FTPUserPwTxt.Text = "";
+            RemoteTextBox.Text = "";
+            ftpDirectory.Nodes.Clear();
+            listView2.Items.Clear();
+            syncBtn.Enabled = false;
         }
     }
 }
