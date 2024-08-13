@@ -41,44 +41,32 @@ namespace FTP_Project
             this.userId = userId;
             this.pwd = pwd;
 
-            string url = $@"FTP://{this.ipAddr}:21/";
+            string url = $"ftp://{this.ipAddr}/"; // 포트는 기본값 21을 사용하며, URL 끝에 '/'를 붙입니다.
 
             try
             {
-
                 FtpWebRequest ftpWebRequest = (FtpWebRequest)WebRequest.Create(url);
-
                 ftpWebRequest.Credentials = new NetworkCredential(this.userId, this.pwd);
-
                 ftpWebRequest.KeepAlive = false;
+                ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectory; // 디렉토리 목록을 요청하여 연결을 테스트
+                ftpWebRequest.UsePassive = true; // 일반적으로 사용되는 설정
 
-                ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectory;
-                ftpWebRequest.UsePassive = false;
-
-                // FTP 서버 응답을 반환
-                //using (ftpWebRequest.GetResponse())
-                //{
-                //}
-
-                this.isConnected = true;
+                // FTP 서버 응답을 받습니다.
+                using (FtpWebResponse response = (FtpWebResponse)ftpWebRequest.GetResponse())
+                {
+                    // 응답이 성공적으로 반환되면 연결 성공으로 간주합니다.
+                    this.isConnected = true;
+                    return true;
+                }
             }
             catch (Exception ex)
             {
+                // 예외를 캐치하여 LastException에 저장하고, 이벤트를 발생시킵니다.
                 this.LastException = ex;
 
 
-                System.Reflection.MemberInfo info = System.Reflection.MethodInfo.GetCurrentMethod();
-                string id = $"{info.ReflectedType.Name}.{info.Name}";
-
-                if (this.ExceptionEvent != null)
-                {
-                    this.ExceptionEvent(id, ex);
-                }
-
                 return false;
             }
-
-            return true;
         }
 
         // 디렉토리 목록을 가져오는 메서드

@@ -148,6 +148,9 @@ namespace FTP_Project
                         if (dragData.IsDirectory)
                         {
                             await UploadDirectory(sourcePath, targetRemotePath);
+                            logBox.AppendText($"상태 : {sourcePath} -----> {targetRemotePath}\n\r" + Environment.NewLine);
+                            logBox.SelectionStart = logBox.TextLength;
+                            logBox.ScrollToCaret();
                         }
                         else
                         {
@@ -156,12 +159,20 @@ namespace FTP_Project
                                 bool uploadSuccess = ftp.UploadFile(sourcePath, targetRemotePath);
                                 if (!uploadSuccess)
                                 {
-                                    MessageBox.Show($"Failed to upload {item.Text}.");
+                                    logBox.AppendText($"상태 : {item.Text} 업로드에 실패했습니다.\n\r" + Environment.NewLine);
+                                    logBox.SelectionStart = logBox.TextLength;
+                                    logBox.ScrollToCaret();
+
                                 }
+                                logBox.AppendText($"상태 : {sourcePath}{item.Text} -----> {targetRemotePath}{item.Text}\n\r" + Environment.NewLine);
+                                logBox.SelectionStart = logBox.TextLength;
+                                logBox.ScrollToCaret();
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show($"Error during file upload: {ex.Message}");
+                                logBox.AppendText($"에러 : {ex.Message} \n\r" + Environment.NewLine);
+                                logBox.SelectionStart = logBox.TextLength;
+                                logBox.ScrollToCaret();
                             }
                         }
                     }
@@ -173,6 +184,9 @@ namespace FTP_Project
                         if (dragData.IsDirectory)
                         {
                             await DownloadDirectory(sourcePath, targetRemotePath);
+                            logBox.AppendText($"상태 : {sourcePath} -----> {targetRemotePath}\n\r" + Environment.NewLine);
+                            logBox.SelectionStart = logBox.TextLength;
+                            logBox.ScrollToCaret();
                         }
                         else
                         {
@@ -181,12 +195,19 @@ namespace FTP_Project
                                 bool downloadSuccess = ftp.DownloadFile(sourcePath, targetRemotePath);
                                 if (!downloadSuccess)
                                 {
-                                    MessageBox.Show($"Failed to download {item.Text}.");
+                                    logBox.AppendText($"상태 : {item.Text} 업로드에 실패했습니다.\n\r" + Environment.NewLine);
+                                    logBox.SelectionStart = logBox.TextLength;
+                                    logBox.ScrollToCaret();
                                 }
+                                logBox.AppendText($"상태 : {sourcePath}{item.Text} -----> {targetRemotePath}{item.Text}\n\r" + Environment.NewLine);
+                                logBox.SelectionStart = logBox.TextLength;
+                                logBox.ScrollToCaret();
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show($"Error during file download: {ex.Message}");
+                                logBox.AppendText($"에러 : {ex.Message} \n\r" + Environment.NewLine);
+                                logBox.SelectionStart = logBox.TextLength;
+                                logBox.ScrollToCaret();
                             }
                         }
                     }
@@ -232,6 +253,10 @@ namespace FTP_Project
             //행 단위 선택 가능
             listView1.FullRowSelect = true;
             listView2.FullRowSelect = true;
+
+            logBox.AppendText("상태 : 로컬 디렉토리 목록 조회 성공." + Environment.NewLine);
+            logBox.SelectionStart = logBox.TextLength;
+            logBox.ScrollToCaret();
         }
         // 디렉토리 정보를 Treeview에 뿌려주기
         private void Fill(TreeNode dirNode)
@@ -382,11 +407,15 @@ namespace FTP_Project
             result = ftp.ConnectToServer(FTPIpAddrTxt.Text, FTPUserIdTxt.Text, FTPUserPwTxt.Text);
             if (!result)
             {
-                MessageBox.Show("FTP 접속 실패하였습니다, 정보를 확인해주세요.");
+                logBox.AppendText("상태 : FTP 접속 실패. 로그인 정보를 확인해주세요." + Environment.NewLine);
+                logBox.SelectionStart = logBox.TextLength;
+                logBox.ScrollToCaret();
                 return;
             }
 
-            MessageBox.Show("FTP 접속 성공");
+            logBox.AppendText("상태 : FTP 접속 성공." + Environment.NewLine);
+            logBox.SelectionStart = logBox.TextLength;
+            logBox.ScrollToCaret();
             syncBtn.Enabled = true;
             LoadDirectoryTree("/");
         }
@@ -546,6 +575,7 @@ namespace FTP_Project
                 if (parts[2] == "<DIR>")
                 {
                     await DownloadDirectory(itemPath, localItemPath);
+                    
                 }
                 else
                 {
@@ -576,7 +606,6 @@ namespace FTP_Project
                 {
                     using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
                     {
-                        // Directory creation successful, handle the response if needed
                     }
                 }
                 catch (WebException ex)
@@ -591,6 +620,7 @@ namespace FTP_Project
                         MessageBox.Show($"Failed to create remote directory {remoteDirectoryPath}: {ex.Message}");
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -605,6 +635,9 @@ namespace FTP_Project
             progressBar.Style = ProgressBarStyle.Continuous;
             lblStatus.Text = "Deleting remote files and directories...";
             progressBar.Value = 0;
+            logBox.AppendText("상태 : 동기화 중입니다." + Environment.NewLine);
+            logBox.SelectionStart = logBox.TextLength;
+            logBox.ScrollToCaret();
 
             // 서버의 폴더와 파일 삭제
             DeleteRemoteDirectory(RemoteTextBox.Text);
@@ -651,7 +684,7 @@ namespace FTP_Project
             // 진행 상태 업데이트
             lblStatus.Text = "Sync complete.";
             progressBar.Value = progressBar.Maximum;
-            logBox.AppendText("성공적으로 동기화를 완료했습니다.");
+            logBox.AppendText("상태 : 성공적으로 동기화를 완료했습니다." + Environment.NewLine);
             logBox.SelectionStart = logBox.TextLength;
             logBox.ScrollToCaret();
         }
@@ -741,7 +774,7 @@ namespace FTP_Project
         private void deleteBtn_Click_1(object sender, EventArgs e)
         {
             DeleteRemoteDirectory(RemoteTextBox.Text);
-            MessageBox.Show("삭제 성고햇씁니다.");
+            MessageBox.Show("삭제를 성공했습니다.");
         }
 
         private void DisconnectBtn_Click(object sender, EventArgs e)
@@ -757,6 +790,9 @@ namespace FTP_Project
             ftpDirectory.Nodes.Clear();
             listView2.Items.Clear();
             syncBtn.Enabled = false;
+            logBox.AppendText("상태 : 서버와의 접속이 끊어졌습니다..");
+            logBox.SelectionStart = logBox.TextLength;
+            logBox.ScrollToCaret();
         }
     }
 }
