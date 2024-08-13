@@ -6,5 +6,6 @@ namespace FTP_Project
     {
         public string ListViewName { get; set; }
         public ListView.SelectedListViewItemCollection SelectedItems { get; set; }
+        public bool IsDirectory { get; set; }
     }
 }

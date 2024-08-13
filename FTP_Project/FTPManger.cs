@@ -62,10 +62,12 @@ namespace FTP_Project
             System.Windows.Forms.ListView listView = sender as System.Windows.Forms.ListView;
             if (listView != null)
             {
+                bool isDirectory = listView.SelectedItems.Cast<ListViewItem>().Any(item => item.SubItems[2].Text == "폴더");
                 currentDragData = new DragData
                 {
                     ListViewName = listView.Name,
-                    SelectedItems = listView.SelectedItems
+                    SelectedItems = listView.SelectedItems,
+                    IsDirectory = isDirectory
                 };
                 listView.DoDragDrop(currentDragData, DragDropEffects.Move);
             }
@@ -114,26 +116,22 @@ namespace FTP_Project
         }
 
         // DragDrop 이벤트 핸들러
-        private void ListView_DragDrop(object sender, DragEventArgs e)
+        private async void ListView_DragDrop(object sender, DragEventArgs e)
         {
             System.Windows.Forms.ListView targetListView = sender as System.Windows.Forms.ListView;
             if (targetListView == null)
                 return;
 
-            // 드래그된 데이터가 DragData 형식인지 확인합니다.
             if (e.Data.GetDataPresent(typeof(DragData)))
             {
-                // DragData 객체를 가져옵니다.
                 var dragData = (DragData)e.Data.GetData(typeof(DragData));
                 string sourceListViewName = dragData.ListViewName;
                 System.Windows.Forms.ListView sourceListView = sourceListViewName == "listView1" ? listView1 : listView2;
 
-                // 타겟 ListView의 항목 위치를 계산합니다.
                 Point point = targetListView.PointToClient(new Point(e.X, e.Y));
                 ListViewItem targetItem = targetListView.GetItemAt(point.X, point.Y);
                 int targetIndex = targetItem != null ? targetItem.Index : targetListView.Items.Count;
 
-                // 드래그된 아이템들을 타겟 ListView에 추가합니다.
                 foreach (ListViewItem item in dragData.SelectedItems)
                 {
                     ListViewItem clonedItem = (ListViewItem)item.Clone();
@@ -142,44 +140,56 @@ namespace FTP_Project
                     string sourcePath = "";
                     string targetRemotePath = "";
 
-                    // 소스와 타겟 경로를 결정합니다.
                     if (sourceListViewName == "listView1")
                     {
                         sourcePath = Path.Combine(localTextBox.Text, item.Text);
                         targetRemotePath = Path.Combine(RemoteTextBox.Text, clonedItem.Text).Replace("\\", "/");
-                        try
+
+                        if (dragData.IsDirectory)
                         {
-                            // FTP 업로드 로직으로 대체합니다.
-                            bool uploadSuccess = ftp.UploadFile(sourcePath, targetRemotePath);
-                            if (!uploadSuccess)
-                            {
-                                MessageBox.Show($"Failed to upload {item.Text}.");
-                            }
+                            await UploadDirectory(sourcePath, targetRemotePath);
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            MessageBox.Show($"Error during file upload: {ex.Message}");
+                            try
+                            {
+                                bool uploadSuccess = ftp.UploadFile(sourcePath, targetRemotePath);
+                                if (!uploadSuccess)
+                                {
+                                    MessageBox.Show($"Failed to upload {item.Text}.");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Error during file upload: {ex.Message}");
+                            }
                         }
                     }
                     else
                     {
                         sourcePath = Path.Combine(RemoteTextBox.Text, clonedItem.Text).Replace("\\", "/");
                         targetRemotePath = Path.Combine(localTextBox.Text, item.Text);
-                        try
+
+                        if (dragData.IsDirectory)
                         {
-                            // FTP 다운로드 로직으로 대체합니다.
-                            bool downloadSuccess = ftp.DownloadFile(sourcePath, targetRemotePath);
-                            if (!downloadSuccess)
+                            await DownloadDirectory(sourcePath, targetRemotePath);
+                        }
+                        else
+                        {
+                            try
                             {
-                                MessageBox.Show($"Failed to download {item.Text}.");
+                                bool downloadSuccess = ftp.DownloadFile(sourcePath, targetRemotePath);
+                                if (!downloadSuccess)
+                                {
+                                    MessageBox.Show($"Failed to download {item.Text}.");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Error during file download: {ex.Message}");
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Error during file download: {ex.Message}");
-                        }
                     }
-                    // 파일 이동 작업을 처리합니다.
                     targetIndex++;
                 }
             }
@@ -517,6 +527,35 @@ namespace FTP_Project
                 string localSubDirPath = subDir.FullName;
                 string remoteSubDirPath = Path.Combine(remoteDirectoryPath, subDir.Name).Replace("\\", "/");
                 await UploadDirectory(localSubDirPath, remoteSubDirPath);
+            }
+        }
+
+        // 폴더 다운로드
+        private async Task DownloadDirectory(string remoteDirectoryPath, string localDirectoryPath)
+        {
+            Directory.CreateDirectory(localDirectoryPath);
+
+            List<string> remoteFilesAndDirs = ftp.GetDirectoryListing(remoteDirectoryPath);
+            foreach (string remoteItem in remoteFilesAndDirs)
+            {
+                string[] parts = remoteItem.Split(new[] { ' ' }, 9, StringSplitOptions.RemoveEmptyEntries);
+                string name = parts[3];
+                string itemPath = Path.Combine(remoteDirectoryPath, name).Replace("\\", "/");
+                string localItemPath = Path.Combine(localDirectoryPath, name);
+
+                if (parts[2] == "<DIR>")
+                {
+                    await DownloadDirectory(itemPath, localItemPath);
+                }
+                else
+                {
+                    bool downloadSuccess = ftp.DownloadFile(itemPath, localItemPath);
+
+                    if (!downloadSuccess)
+                    {
+                        MessageBox.Show($"Failed to download {name}.");
+                    }
+                }
             }
         }
 
