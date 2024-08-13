@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FTP_Project
 {
@@ -153,6 +154,67 @@ namespace FTP_Project
             }
         }
 
+        //디렉토리 다운로드 메서드
+        public bool DownloadFile(string remoteFilePath, string localFilePath)
+        {
+            try
+            {
+                string url = $"FTP://{this.ipAddr}/{remoteFilePath}".Replace("\\", "/");
+
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+                request.Method = WebRequestMethods.Ftp.DownloadFile;
+                request.Credentials = new NetworkCredential(this.userId, this.pwd);
+                request.UseBinary = true;
+                request.UsePassive = true;
+                request.KeepAlive = false;
+
+                using (FtpWebResponse response = (FtpWebResponse) request.GetResponse())
+                using (Stream responseStream = response.GetResponseStream())
+                using (FileStream fileStream = new FileStream(localFilePath, FileMode.Create))
+                {
+                    responseStream.CopyToAsync(fileStream);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to download file {remoteFilePath}: {ex.Message}");
+                return false;
+            }
+        }
+
+        // 디렉토리 생성 메서드
+        public async Task CreateDirectory(string remoteDirectoryPath)
+        {
+            try
+            {
+                // URL을 생성하고 역슬래시를 슬래시로 바꿉니다.
+                string url = $"FTP://{this.ipAddr}/{remoteDirectoryPath}".Replace("\\", "/");
+
+                // FtpWebRequest를 생성하고 메소드와 자격 증명을 설정합니다.
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+                request.Method = WebRequestMethods.Ftp.MakeDirectory;
+                request.Credentials = new NetworkCredential(this.userId, this.pwd);
+                request.UseBinary = true;
+                request.UsePassive = true;
+                request.KeepAlive = false;
+
+                // 디렉토리 생성 요청을 수행합니다.
+                using (FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync())
+                {
+                    // 요청이 성공적으로 완료된 경우, 상태 코드에 따라 성공적으로 디렉토리를 생성한 것으로 간주합니다.
+                    if (response.StatusCode == FtpStatusCode.CommandOK || response.StatusCode == FtpStatusCode.PathnameCreated)
+                    {
+                        Console.WriteLine($"Directory created successfully: {remoteDirectoryPath}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // 오류가 발생하면 메시지 박스를 표시합니다.
+                MessageBox.Show($"Failed to create directory {remoteDirectoryPath}: {ex.Message}");
+            }
+        }
 
 
     }

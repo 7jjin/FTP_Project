@@ -24,6 +24,7 @@ namespace FTP_Project
         // FTP 연결 확인 값
         private bool result = false;
         private FTPClass ftp = null;
+        private DragData currentDragData;
 
         public FTPManger()
         {
@@ -47,10 +48,10 @@ namespace FTP_Project
             listView2.ItemDrag += new ItemDragEventHandler(listView_ItemDrag);
             listView1.DragEnter += new DragEventHandler(listView_DragEnter);
             listView2.DragEnter += new DragEventHandler(listView_DragEnter);
-            listView1.DragDrop += new DragEventHandler(listView_DragDrop);
-            listView2.DragDrop += new DragEventHandler(listView_DragDrop);
-            listView1.DragOver += new DragEventHandler(listView_DragOver);
-            listView2.DragOver += new DragEventHandler(listView_DragOver);
+            listView1.DragDrop += new DragEventHandler(ListView_DragDrop);
+            listView2.DragDrop += new DragEventHandler(ListView_DragDrop);
+            listView1.DragOver += new DragEventHandler(ListView_DragOver);
+            listView2.DragOver += new DragEventHandler(ListView_DragOver);
         }
 
 
@@ -61,14 +62,19 @@ namespace FTP_Project
             System.Windows.Forms.ListView listView = sender as System.Windows.Forms.ListView;
             if (listView != null)
             {
-                listView.DoDragDrop(listView.SelectedItems, DragDropEffects.Move);
+                currentDragData = new DragData
+                {
+                    ListViewName = listView.Name,
+                    SelectedItems = listView.SelectedItems
+                };
+                listView.DoDragDrop(currentDragData, DragDropEffects.Move);
             }
         }
 
         // DragEnter 이벤트 핸들러
         private void listView_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(System.Windows.Forms.ListView.SelectedListViewItemCollection)))
+            if (e.Data.GetDataPresent(typeof(DragData)))
             {
                 e.Effect = DragDropEffects.Move;
             }
@@ -77,56 +83,108 @@ namespace FTP_Project
                 e.Effect = DragDropEffects.None;
             }
         }
-
         // DragOver 이벤트 핸들러
-        private void listView_DragOver(object sender, DragEventArgs e)
+        private void ListView_DragOver(object sender, DragEventArgs e)
         {
             System.Windows.Forms.ListView listView = sender as System.Windows.Forms.ListView;
-            Point point = listView.PointToClient(new Point(e.X, e.Y));
-            ListViewItem item = listView.GetItemAt(point.X, point.Y);
 
-            if (item != null)
+            // DragData 객체를 가져옵니다.
+            if (e.Data.GetDataPresent(typeof(DragData)))
             {
-                listView.InsertionMark.Index = item.Index;
-                listView.InsertionMark.AppearsAfterItem = point.Y > item.Bounds.Top + (item.Bounds.Height / 2);
-            }
-            else
-            {
-                listView.InsertionMark.Index = listView.Items.Count - 1;
+                var dragData = (DragData)e.Data.GetData(typeof(DragData));
+                string draggedFromListViewName = dragData.ListViewName;
+
+                // 현재 드래그 중인 위치를 계산합니다.
+                Point point = listView.PointToClient(new Point(e.X, e.Y));
+                ListViewItem item = listView.GetItemAt(point.X, point.Y);
+
+                if (item != null)
+                {
+                    listView.InsertionMark.Index = item.Index;
+                    listView.InsertionMark.AppearsAfterItem = point.Y > item.Bounds.Top + (item.Bounds.Height / 2);
+                }
+                else
+                {
+                    listView.InsertionMark.Index = listView.Items.Count - 1;
+                }
+
+                // 예를 들어 드래그된 ListView의 이름을 메시지 박스로 표시할 수 있습니다.
+                // MessageBox.Show($"Dragging from ListView with Name: {draggedFromListViewName}");
             }
         }
 
         // DragDrop 이벤트 핸들러
-        private void listView_DragDrop(object sender, DragEventArgs e)
+        private void ListView_DragDrop(object sender, DragEventArgs e)
         {
-            System.Windows.Forms.ListView listView = sender as System.Windows.Forms.ListView;
-            System.Windows.Forms.ListView otherListView = listView == listView1 ? listView2 : listView1;
+            System.Windows.Forms.ListView targetListView = sender as System.Windows.Forms.ListView;
+            if (targetListView == null)
+                return;
 
-            if (e.Data.GetDataPresent(typeof(System.Windows.Forms.ListView.SelectedListViewItemCollection)))
+            // 드래그된 데이터가 DragData 형식인지 확인합니다.
+            if (e.Data.GetDataPresent(typeof(DragData)))
             {
-                System.Windows.Forms.ListView.SelectedListViewItemCollection items = (System.Windows.Forms.ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(System.Windows.Forms.ListView.SelectedListViewItemCollection));
-                Point point = listView.PointToClient(new Point(e.X, e.Y));
-                ListViewItem targetItem = listView.GetItemAt(point.X, point.Y);
-                int targetIndex = targetItem != null ? targetItem.Index : listView.Items.Count;
+                // DragData 객체를 가져옵니다.
+                var dragData = (DragData)e.Data.GetData(typeof(DragData));
+                string sourceListViewName = dragData.ListViewName;
+                System.Windows.Forms.ListView sourceListView = sourceListViewName == "listView1" ? listView1 : listView2;
 
-                foreach (ListViewItem item in items)
+                // 타겟 ListView의 항목 위치를 계산합니다.
+                Point point = targetListView.PointToClient(new Point(e.X, e.Y));
+                ListViewItem targetItem = targetListView.GetItemAt(point.X, point.Y);
+                int targetIndex = targetItem != null ? targetItem.Index : targetListView.Items.Count;
+
+                // 드래그된 아이템들을 타겟 ListView에 추가합니다.
+                foreach (ListViewItem item in dragData.SelectedItems)
                 {
                     ListViewItem clonedItem = (ListViewItem)item.Clone();
-                    listView.Items.Insert(targetIndex, clonedItem);
+                    targetListView.Items.Insert(targetIndex, clonedItem);
 
-                    // 파일 이동 로직 추가
-                    string sourcePath = Path.Combine(localTextBox.Text, item.Text);
-                    string targetPath = Path.Combine(RemoteTextBox.Text, item.Text);
-                    if (File.Exists(sourcePath))
+                    string sourcePath = "";
+                    string targetRemotePath = "";
+
+                    // 소스와 타겟 경로를 결정합니다.
+                    if (sourceListViewName == "listView1")
                     {
-                        File.Move(sourcePath, targetPath);
+                        sourcePath = Path.Combine(localTextBox.Text, item.Text);
+                        targetRemotePath = Path.Combine(RemoteTextBox.Text, clonedItem.Text).Replace("\\", "/");
+                        try
+                        {
+                            // FTP 업로드 로직으로 대체합니다.
+                            bool uploadSuccess = ftp.UploadFile(sourcePath, targetRemotePath);
+                            if (!uploadSuccess)
+                            {
+                                MessageBox.Show($"Failed to upload {item.Text}.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error during file upload: {ex.Message}");
+                        }
                     }
-
-                    item.Remove();
+                    else
+                    {
+                        sourcePath = Path.Combine(RemoteTextBox.Text, clonedItem.Text).Replace("\\", "/");
+                        targetRemotePath = Path.Combine(localTextBox.Text, item.Text);
+                        try
+                        {
+                            // FTP 다운로드 로직으로 대체합니다.
+                            bool downloadSuccess = ftp.DownloadFile(sourcePath, targetRemotePath);
+                            if (!downloadSuccess)
+                            {
+                                MessageBox.Show($"Failed to download {item.Text}.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error during file download: {ex.Message}");
+                        }
+                    }
+                    // 파일 이동 작업을 처리합니다.
                     targetIndex++;
                 }
             }
         }
+
 
         // TreeView 폴더 기준으로 노드 경로를 가져옴
         private void FTPManger_Load(object sender, EventArgs e)

@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DirectoryPath.cs" />
+    <Compile Include="DragData.cs" />
     <Compile Include="FTPClass.cs" />
     <Compile Include="FTPClient.cs" />
     <Compile Include="FTPManger.cs">
