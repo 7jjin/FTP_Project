@@ -47,7 +47,6 @@
             this.syncBtn = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.lblStatus = new System.Windows.Forms.Label();
-            this.deleteBtn = new System.Windows.Forms.Button();
             this.DisconnectBtn = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.panel6 = new System.Windows.Forms.Panel();
@@ -60,6 +59,7 @@
             this.panel7 = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel2.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel8.SuspendLayout();
@@ -69,7 +69,6 @@
             this.panel1.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel9.SuspendLayout();
-            this.panel10.SuspendLayout();
             this.SuspendLayout();
             // 
             // ConnectionBtn
@@ -148,7 +147,7 @@
             this.myDirectory.Location = new System.Drawing.Point(0, 0);
             this.myDirectory.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.myDirectory.Name = "myDirectory";
-            this.myDirectory.Size = new System.Drawing.Size(438, 186);
+            this.myDirectory.Size = new System.Drawing.Size(448, 184);
             this.myDirectory.TabIndex = 0;
             // 
             // label2
@@ -171,10 +170,10 @@
             // ftpDirectory
             // 
             this.ftpDirectory.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ftpDirectory.Location = new System.Drawing.Point(0, 0);
+            this.ftpDirectory.Location = new System.Drawing.Point(558, 53);
             this.ftpDirectory.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ftpDirectory.Name = "ftpDirectory";
-            this.ftpDirectory.Size = new System.Drawing.Size(436, 186);
+            this.ftpDirectory.Size = new System.Drawing.Size(450, 186);
             this.ftpDirectory.TabIndex = 1;
             // 
             // label3
@@ -191,10 +190,10 @@
             this.listView2.AllowDrop = true;
             this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView2.HideSelection = false;
-            this.listView2.Location = new System.Drawing.Point(0, 0);
+            this.listView2.Location = new System.Drawing.Point(558, 243);
             this.listView2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(436, 224);
+            this.listView2.Size = new System.Drawing.Size(450, 226);
             this.listView2.TabIndex = 3;
             this.listView2.UseCompatibleStateImageBehavior = false;
             // 
@@ -206,19 +205,19 @@
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(438, 224);
+            this.listView1.Size = new System.Drawing.Size(448, 224);
             this.listView1.TabIndex = 2;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
             // syncBtn
             // 
             this.syncBtn.Enabled = false;
-            this.syncBtn.Location = new System.Drawing.Point(661, 0);
+            this.syncBtn.Location = new System.Drawing.Point(23, 81);
             this.syncBtn.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.syncBtn.Name = "syncBtn";
-            this.syncBtn.Size = new System.Drawing.Size(105, 48);
+            this.syncBtn.Size = new System.Drawing.Size(38, 29);
             this.syncBtn.TabIndex = 2;
-            this.syncBtn.Text = "동기화";
+            this.syncBtn.Text = ">>";
             this.syncBtn.UseVisualStyleBackColor = true;
             this.syncBtn.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -226,7 +225,7 @@
             // 
             this.progressBar.Location = new System.Drawing.Point(20, 3);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(620, 46);
+            this.progressBar.Size = new System.Drawing.Size(968, 46);
             this.progressBar.TabIndex = 3;
             // 
             // lblStatus
@@ -237,17 +236,6 @@
             this.lblStatus.Size = new System.Drawing.Size(84, 19);
             this.lblStatus.TabIndex = 4;
             this.lblStatus.Text = "실행상황";
-            // 
-            // deleteBtn
-            // 
-            this.deleteBtn.Location = new System.Drawing.Point(772, 0);
-            this.deleteBtn.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.deleteBtn.Name = "deleteBtn";
-            this.deleteBtn.Size = new System.Drawing.Size(105, 48);
-            this.deleteBtn.TabIndex = 5;
-            this.deleteBtn.Text = "삭제";
-            this.deleteBtn.UseVisualStyleBackColor = true;
-            this.deleteBtn.Click += new System.EventHandler(this.deleteBtn_Click_1);
             // 
             // DisconnectBtn
             // 
@@ -273,7 +261,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 477F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 186F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(892, 763);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1017, 763);
             this.tableLayoutPanel2.TabIndex = 6;
             // 
             // panel6
@@ -289,7 +277,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(3, 3);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(886, 94);
+            this.panel6.Size = new System.Drawing.Size(1011, 94);
             this.panel6.TabIndex = 0;
             // 
             // panel8
@@ -297,40 +285,41 @@
             this.panel8.Controls.Add(this.logBox);
             this.panel8.Controls.Add(this.lblStatus);
             this.panel8.Controls.Add(this.progressBar);
-            this.panel8.Controls.Add(this.deleteBtn);
-            this.panel8.Controls.Add(this.syncBtn);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel8.Location = new System.Drawing.Point(3, 580);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(886, 180);
+            this.panel8.Size = new System.Drawing.Size(1011, 180);
             this.panel8.TabIndex = 2;
             // 
             // logBox
             // 
             this.logBox.Location = new System.Drawing.Point(20, 70);
             this.logBox.Name = "logBox";
-            this.logBox.Size = new System.Drawing.Size(857, 107);
+            this.logBox.Size = new System.Drawing.Size(968, 107);
             this.logBox.TabIndex = 6;
             this.logBox.Text = "";
             // 
             // tableLayoutPanel3
             // 
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.22573F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49.77427F));
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45F));
+            this.tableLayoutPanel3.Controls.Add(this.listView2, 2, 2);
+            this.tableLayoutPanel3.Controls.Add(this.ftpDirectory, 2, 1);
             this.tableLayoutPanel3.Controls.Add(this.panel12, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.panel11, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.panel1, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.panel7, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.panel9, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.panel10, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.panel7, 2, 0);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 103);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.5036F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 79.49641F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 21.16183F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 78.83817F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 229F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(886, 471);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1011, 471);
             this.tableLayoutPanel3.TabIndex = 3;
             // 
             // panel12
@@ -339,16 +328,17 @@
             this.panel12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel12.Location = new System.Drawing.Point(3, 244);
             this.panel12.Name = "panel12";
-            this.panel12.Size = new System.Drawing.Size(438, 224);
+            this.panel12.Size = new System.Drawing.Size(448, 224);
             this.panel12.TabIndex = 5;
             // 
             // panel11
             // 
-            this.panel11.Controls.Add(this.listView2);
+            this.panel11.Controls.Add(this.button2);
+            this.panel11.Controls.Add(this.syncBtn);
             this.panel11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel11.Location = new System.Drawing.Point(447, 244);
+            this.panel11.Location = new System.Drawing.Point(457, 244);
             this.panel11.Name = "panel11";
-            this.panel11.Size = new System.Drawing.Size(436, 224);
+            this.panel11.Size = new System.Drawing.Size(95, 224);
             this.panel11.TabIndex = 4;
             // 
             // panel1
@@ -358,42 +348,52 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(438, 43);
+            this.panel1.Size = new System.Drawing.Size(448, 45);
             this.panel1.TabIndex = 0;
             // 
             // panel7
             // 
             this.panel7.Controls.Add(this.RemoteTextBox);
             this.panel7.Controls.Add(this.label3);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel7.Location = new System.Drawing.Point(447, 3);
+            this.panel7.Location = new System.Drawing.Point(558, 3);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(436, 43);
+            this.panel7.Size = new System.Drawing.Size(450, 43);
             this.panel7.TabIndex = 1;
             // 
             // panel9
             // 
             this.panel9.Controls.Add(this.myDirectory);
             this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel9.Location = new System.Drawing.Point(3, 52);
+            this.panel9.Location = new System.Drawing.Point(3, 54);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(438, 186);
+            this.panel9.Size = new System.Drawing.Size(448, 184);
             this.panel9.TabIndex = 2;
             // 
             // panel10
             // 
-            this.panel10.Controls.Add(this.ftpDirectory);
             this.panel10.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel10.Location = new System.Drawing.Point(447, 52);
+            this.panel10.Location = new System.Drawing.Point(457, 54);
             this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(436, 186);
+            this.panel10.Size = new System.Drawing.Size(95, 184);
             this.panel10.TabIndex = 3;
+            // 
+            // button2
+            // 
+            this.button2.Enabled = false;
+            this.button2.Location = new System.Drawing.Point(23, 128);
+            this.button2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(38, 29);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "<<";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // FTPManger
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(892, 783);
+            this.ClientSize = new System.Drawing.Size(1016, 783);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "FTPManger";
@@ -412,7 +412,6 @@
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
             this.panel9.ResumeLayout(false);
-            this.panel10.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -442,7 +441,6 @@
         private System.Windows.Forms.Button Disconnect;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.Button deleteBtn;
         private System.Windows.Forms.Button DisconnectBtn;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Panel panel6;
@@ -455,6 +453,7 @@
         private System.Windows.Forms.Panel panel12;
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.RichTextBox logBox;
+        private System.Windows.Forms.Button button2;
     }
 }
 

@@ -417,6 +417,7 @@ namespace FTP_Project
             logBox.SelectionStart = logBox.TextLength;
             logBox.ScrollToCaret();
             syncBtn.Enabled = true;
+            button2.Enabled = true;
             LoadDirectoryTree("/");
         }
 
@@ -793,6 +794,15 @@ namespace FTP_Project
             logBox.AppendText("상태 : 서버와의 접속이 끊어졌습니다..");
             logBox.SelectionStart = logBox.TextLength;
             logBox.ScrollToCaret();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (!result)
+            {
+                button2.Enabled = false;
+            }
+            SyncListViews(listView2, listView1);
         }
     }
 }
